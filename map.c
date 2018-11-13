@@ -132,7 +132,7 @@ char getPOI(map * mp, int a, int b) {
   return mp->points[a][b];
 }
 
-void compVarA(map *mp, FILE *fpw){
+void modeVarA(map *mp, FILE *fpw){
   int res = 0, aux = -1;
 
   res = varA(mp, getPOI(mp, 0, 0), getPOI(mp, 1, 0));

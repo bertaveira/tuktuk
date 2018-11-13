@@ -11,5 +11,6 @@ void compA (map *, int, int, int *, int *, int *);
 int inMapCheck (map *, int, int);
 char getMode(map *);
 char getPOI(map *, int, int);
+void modeVarA(map *, FILE *);
 
 #endif
