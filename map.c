@@ -37,15 +37,15 @@ map* readMap(FILE * fp) {
     mp->points[0][i] = y;
     mp->points[1][i] = x;
   }
-  //map => mp->map[x][y]
-  mp->map = (int **)malloc(sizeof(int*)*mp->x);
+  //map => mp->map[y][x]
+  mp->map = (int **)malloc(sizeof(int*)*mp->y);
   nullCheck((Item)mp->map);
 
-  for(i = 0; i < mp->x; i++) {
-    mp->map[i] = (int *)malloc(sizeof(int)*mp->y);
+  for(i = 0; i < mp->y; i++) {
+    mp->map[i] = (int *)malloc(sizeof(int)*mp->x);
     nullCheck((Item)mp->map[i]);
     //fill matrix with cost
-    for(j = 0; j < mp->y; j++){
+    for(j = 0; j < mp->x; j++){
       a = fscanf(fp, "%d", &mp->map[i][j]);
       scanCheck(a, 1);
     }
@@ -101,8 +101,8 @@ in: mp -- map of city
 */
 void compA (map *mp, int newx, int newy, int *min){
   if (inMapCheck(mp, newx, newy) == 1){
-    if (*min > mp->map[newx][newy] || *min == -1){
-      *min = mp->map[newx][newy];
+    if (*min > mp->map[newy][newx] || *min == -1){
+      *min = mp->map[newy][newx];
     }
   }
 }
@@ -115,7 +115,7 @@ return: 1 if valid
         0 if unvalid
 */
 int inMapCheck (map *mp, int x, int y){
-  if (x > 0 && x < mp->x && y > 0 && y < mp->y && mp->map[x][y] != 0)
+  if (x > 0 && x < mp->x && y > 0 && y < mp->y && mp->map[y][x] != 0)
     return 1;
   return 0;
 
