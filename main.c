@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
-  outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])+strlen(".valid")));
+  outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])+strlen(".valid")+1));
   nullCheck((Item *) outfilename);
   strcpy(outfilename, argv[1]);
   strcat(outfilename, ".valid");
