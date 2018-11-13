@@ -68,8 +68,7 @@ internal:
   minx, miny -- coordinats of the minimal cost possition to date
 */
 int varA (map *mp, int x, int y){
-  int auxx, auxy, minx = x-2, miny = y-1;
-  int min = -1;
+  int auxx, auxy, minx = x-2, miny = y-1, min = -1;
   auxx = x-2;
   auxy = y-1;
   compA(mp, auxx, auxy, &minx, &miny, &min);
