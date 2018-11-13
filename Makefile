@@ -10,15 +10,15 @@ SOURCES = funcs.c map.c main.c
 #  Objects
 OBJECTS = funcs.o map.o main.o
 
-main: $(OBJECTS)
+tuktuk: $(OBJECTS)
 	gcc -o $@ $(OBJECTS)
 
-map.o: map.h map.c
+map.o: map.h defs.h map.c
 
 funcs.o: funcs.h defs.h funcs.c
 
 
-clean::
-	rm -f *.o core a.out main *~
+clean:
+	rm main $(OBJECTS)
 
 # DO NOT DELETE
