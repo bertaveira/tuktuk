@@ -64,7 +64,7 @@ in: mp -- map of city
     min -- cost of minimal cost position to date
 */
 void compA (map *mp, int newx, int newy, int *minx, int *miny, int *min){
-  if (newx > 0 || newx < map->x || newy > 0 || newy < mp->y){
+  if (inMapCheck(mp, newx, newy) == 1){
     if(minx = -1){
       min = mp->map[newx][newy];
       minx = newx;
@@ -77,4 +77,12 @@ void compA (map *mp, int newx, int newy, int *minx, int *miny, int *min){
       }
     }
   }
+}
+
+
+
+int inMapCheck (map *mp, int x, int y){
+  if ((newx > 0 || newx < map->x || newy > 0 || newy < mp->y) && mp->mp[x][y] != 0)
+    return 1;
+  return 0;
 }
