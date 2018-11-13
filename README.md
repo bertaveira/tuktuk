@@ -4,7 +4,7 @@ In this project we were asked to develop a program in C language that would find
 
 The pawn can only move like a horse in chess (L shape moves).
 
-###Modes:
+### Modes:
 A - Move from x1 to x2 minimizing the cost of the path
 B - Move from x1 and go through all xn, until the last one in the given order, minimizing the cost
 C - Move from x1 and go through all xn, until the last one not in any specific order, minimizing the cost
