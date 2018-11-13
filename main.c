@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
   fp = fopen(argv[1], "r");
 
-  while (( mp == readArgs(fp, )) != NULL) {
+  while (( mp == readMap(fp)) != NULL) {
 
   }
 
