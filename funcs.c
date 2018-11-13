@@ -10,3 +10,10 @@ void nullCheck(Item* i) {
     exit(0);
   }
 }
+
+void scanCheck(int a, int b) {
+  if ( a != b) {
+    printf("erro a ler ficheiro- numero de parametros errado\n");
+    exit(0);
+  }
+}

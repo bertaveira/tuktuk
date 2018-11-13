@@ -23,6 +23,7 @@ map* readMap(FILE * fp) {
   nullCheck((Item)mp);
   //read first line
   a = fscanf(fp, "%d %d %c %d", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
+  scanCheck(a, 4);
   //alloc space for points
   mp->points[0] = (int *)malloc(sizeof(int)* mp->nPoints);
   nullCheck((Item)mp->points[0]);
@@ -32,6 +33,7 @@ map* readMap(FILE * fp) {
   //save the points given
   for(i = 0; i < mp->nPoints; i++) {
     a = fscanf(fp, "%d %d", &y, &x);
+    scanCheck(a, 2);
     mp->points[0][i] = y;
     mp->points[1][i] = x;
   }
@@ -44,7 +46,8 @@ map* readMap(FILE * fp) {
     nullCheck((Item)mp->map[i]);
     //fill matrix with cost
     for(j = 0; j < mp->y; j++){
-      a = fscanf(fp, "%d", mp->map[i][j]);
+      a = fscanf(fp, "%d", &mp->map[i][j]);
+      scanCheck(a, 1);
     }
   }
 
