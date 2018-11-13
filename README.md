@@ -17,5 +17,31 @@ The makefile already does it for you so all you have to do is use the command `m
 After that you can run the program using a command like this:
 
 ```
-./tuktuk <nome>.cities
+./tuktuk <name>.cities
+```
+
+### Input File
+
+The file (<name>.cities) used as an argument to the program should be like the one bellow.
+
+The first line is: heigh of map || width of map || mode || number of points of interest
+
+The next lines with 2 numbers are the points of interest coordinates.
+
+After that the rest is the map where the numbers are the cost (0 means you cant go there)
+
+```
+10 11 A 2
+0 0
+7 9
+1 0 2 3 2 3 2 3 2 3 1
+3 2 1 2 3 3 1 2 3 2 1
+4 3 2 1 2 3 4 5 0 3 1
+1 6 2 3 2 3 2 3 2 3 1
+3 2 1 2 3 0 1 2 3 2 1
+4 3 2 1 2 3 4 5 3 3 1
+1 2 0 3 2 3 2 3 2 3 1
+3 2 1 2 3 3 1 2 3 2 1
+4 3 2 1 2 3 4 5 3 0 1
+1 7 2 3 2 3 2 3 2 3 1
 ```
