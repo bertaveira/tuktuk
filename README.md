@@ -38,7 +38,7 @@ After that you can run the program using a command like this:
 
 ## Input File
 
-The file (<name>.cities) used as an argument to the program should be like the one bellow.
+The file (name.cities) used as an argument to the program should be like the one bellow.
 
 The first line is: heigh of map || width of map || mode || number of points of interest
 
