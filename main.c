@@ -24,6 +24,7 @@
 
 
 #include "map.h"
+#include "func.h"
 
 
 int main(int argc, char **argv) {
@@ -31,6 +32,11 @@ int main(int argc, char **argv) {
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
+
+  while (( mp == readMap(fp)) != NULL) {
+
+  }
+
 
   fclose(fp);
 

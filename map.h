@@ -4,7 +4,7 @@
 #include "defs.h"
 
 
-map* readArgs();
+map* readMap(FILE *);
 
 typedef struct _map map;
 
