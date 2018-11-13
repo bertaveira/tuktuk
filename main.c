@@ -24,16 +24,17 @@
 
 
 #include "map.h"
-#include "func.h"
+#include "funcs.h"
 
 
 int main(int argc, char **argv) {
+  map *mp;
   FILE *fp = NULL;
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
 
-  while (( mp == readMap(fp)) != NULL) {
+  while (( mp = readMap(fp)) != NULL) {
 
   }
 

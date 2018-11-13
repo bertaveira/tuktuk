@@ -102,12 +102,12 @@ in: mp -- map of city
 void compA (map *mp, int newx, int newy, int *minx, int *miny, int *min){
   if (inMapCheck(mp, newx, newy) == 1){
     if(*minx == -1){
-      min = mp->map[newx][newy];
+      *min = mp->map[newx][newy];
       *minx = newx;
       *miny = newy;
     }else {
-      if (mp->map[minx][miny] > mp->map[newx][newy]){
-        min = mp->map[newx][newy];
+      if (mp->map[*minx][*miny] > mp->map[newx][newy]){
+        *min = mp->map[newx][newy];
         *minx = newx;
         *miny = newy;
       }
