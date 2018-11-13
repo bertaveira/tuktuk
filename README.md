@@ -5,10 +5,10 @@ In this project we were asked to develop a program in C language that would find
 ### Run The Program
 
 First of all you should compile the Program.
-The makefile already does it for you so all you have to do is use the command 'make' in the right directory.
+The makefile already does it for you so all you have to do is use the command `make` in the right directory.
 
 After that you can run the program using a command like this:
 
-'''
+```
 ./tuktuk <nome>.cities
-'''
+```
