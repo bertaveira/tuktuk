@@ -3,7 +3,7 @@
 
 #include "defs.h"
 
-
+typedef struct _map map;
 
 
 #endif
