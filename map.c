@@ -4,8 +4,15 @@
 
 #include "map.h"
 
+
+map* readArgs() {
+
+  fscanf();
+}
+
 typedef struct _map {
   int ** map;
   int height;
   int with;
 } map;
+

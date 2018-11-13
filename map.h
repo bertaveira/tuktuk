@@ -3,7 +3,11 @@
 
 #include "defs.h"
 
+
+map* readArgs();
+
 typedef struct _map map;
+
 
 
 #endif
