@@ -80,9 +80,14 @@ void compA (map *mp, int newx, int newy, int *minx, int *miny, int *min){
 }
 
 
-
+/*
+in: mp -- map of city
+    x,y -- coordinats to inMapCheck
+return: 1 if valid
+        0 if unvalid
+*/
 int inMapCheck (map *mp, int x, int y){
-  if ((newx > 0 || newx < map->x || newy > 0 || newy < mp->y) && mp->mp[x][y] != 0)
+  if (newx > 0 && newx < map->x && newy > 0 && newy < mp->y && mp->mp[x][y] != 0)
     return 1;
   return 0;
 }
