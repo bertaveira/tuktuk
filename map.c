@@ -122,3 +122,12 @@ int inMapCheck (map *mp, int x, int y){
   return 0;
 
 }
+
+
+char getMode(map * mp) {
+  return mp->mode;
+}
+
+char getPOI(map * mp, int a, int b) {
+  return mp->points[a][b];
+}

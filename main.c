@@ -30,16 +30,16 @@
 int main(int argc, char **argv) {
   map *mp;
   FILE *fp = NULL;
-  int min = 0;
+  int i = 0;
 
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
 
   while (( mp = readMap(fp)) != NULL) {
-    switch (mp->mode) {
+    switch (getMode(mp)) {
       case 'A':
-        min = varA(mp, mp->points[0][0], mp->points[1][0]);
+        i = varA(mp, getPOI(mp, 0, 0), getPOI(mp, 1, 0));
         break;
       case 'B':
 
