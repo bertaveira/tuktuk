@@ -10,6 +10,7 @@ The pawn can only move like a horse in chess (L shape moves).
 * C - Move from x1 and go through all xn, until the last one not in any specific order, minimizing the cost.
 
 
+
 ## Getting Started
 
 This is all made in C language and was tested using `gcc`
