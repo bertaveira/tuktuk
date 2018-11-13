@@ -9,10 +9,25 @@ The pawn can only move like a horse in chess (L shape moves).
 * B - Move from x1 and go through all xn, until the last one in the given order, minimizing the cost.
 * C - Move from x1 and go through all xn, until the last one not in any specific order, minimizing the cost.
 
+
+## Getting Started
+
+This is all made in C language and was tested using `gcc`
+
+### Prerequisites
+
+1. gcc
+2. makefile
+
+
 ### Run The Program
 
 First of all you should compile the Program.
 The makefile already does it for you so all you have to do is use the command `make` in the right directory.
+
+```
+make
+```
 
 After that you can run the program using a command like this:
 
