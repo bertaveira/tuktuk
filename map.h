@@ -3,7 +3,7 @@
 
 #include "defs.h"
 
-
+map* readArgs();
 
 
 #endif

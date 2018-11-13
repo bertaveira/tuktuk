@@ -6,5 +6,6 @@
 
 
 map* readArgs() {
-  
+
+  fscanf();
 }
