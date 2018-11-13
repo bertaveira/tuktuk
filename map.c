@@ -14,7 +14,7 @@ typedef struct _map {
   int *points[2];
 } map;
 
-// onde estão estes comentarios?
+
 map* readMap(FILE * fp) {
   int a = 0, i, x, y, j;
 
@@ -101,15 +101,15 @@ in: mp -- map of city
 */
 void compA (map *mp, int newx, int newy, int *minx, int *miny, int *min){
   if (inMapCheck(mp, newx, newy) == 1){
-    if(minx = -1){
+    if(*minx == -1){
       min = mp->map[newx][newy];
-      minx = newx;
-      miny = newy;
+      *minx = newx;
+      *miny = newy;
     }else {
       if (mp->map[minx][miny] > mp->map[newx][newy]){
         min = mp->map[newx][newy];
-        minx = newx;
-        miny = newy;
+        *minx = newx;
+        *miny = newy;
       }
     }
   }
@@ -123,7 +123,7 @@ return: 1 if valid
         0 if unvalid
 */
 int inMapCheck (map *mp, int x, int y){
-  if (newx > 0 && newx < map->x && newy > 0 && newy < mp->y && mp->mp[x][y] != 0)
+  if (x > 0 && x < mp->x && y > 0 && y < mp->y && mp->map[x][y] != 0)
     return 1;
   return 0;
 
