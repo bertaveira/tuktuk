@@ -29,17 +29,22 @@
 
 int main(int argc, char **argv) {
   map *mp;
-  FILE *fp = NULL;
-  int i = 0;
+  FILE *fp = NULL, *fpw = NULL;
+  char *outfilename = NULL;
 
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
+  outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1]+srtlen(".coiso"))));
+  nullCheck(outfilename);
+  strcpy(outfilename, argv[1]);
+  strcat(outfilename, ".coiso");
+  fpw = fopen(outfilename, "w");
 
   while (( mp = readMap(fp)) != NULL) {
     switch (getMode(mp)) {
       case 'A':
-        i = varA(mp, getPOI(mp, 0, 0), getPOI(mp, 1, 0));
+        compVarA(mp, fpw);
         break;
       case 'B':
 

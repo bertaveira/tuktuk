@@ -131,3 +131,11 @@ char getMode(map * mp) {
 char getPOI(map * mp, int a, int b) {
   return mp->points[a][b];
 }
+
+void compVarA(map *mp, FILE *fpw){
+  int res = 0, aux = -1;
+
+  res = varA(mp, getPOI(mp, 0, 0), getPOI(mp, 1, 0));
+  if(res != 0) aux = 1;
+  fprintf(fpw, "%d %d %c %d %d %d\n", mp->x, mp->y, mp->mode, mp->nPoints, aux, res);
+}
