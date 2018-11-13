@@ -7,7 +7,7 @@ typedef struct _map map;
 
 map* readMap(FILE *);
 int varA (map *, int, int);
-void compA (map *, int, int, int *, int *, int *);
+void compA (map *, int, int, int *);
 int inMapCheck (map *, int, int);
 char getMode(map *);
 char getPOI(map *, int, int);

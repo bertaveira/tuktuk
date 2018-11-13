@@ -68,25 +68,25 @@ internal:
   minx, miny -- coordinats of the minimal cost possition to date
 */
 int varA (map *mp, int x, int y){
-  int auxx, auxy, minx = x-2, miny = y-1, min = -1;
+  int auxx, auxy, min = -1;
   auxx = x-2;
   auxy = y-1;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   auxy = y+1;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   auxx = x+2;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   auxy = y-1;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   auxx = x+1;
   auxy = y+2;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   auxy = y-2;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   auxx = x-1;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   auxy = y+2;
-  compA(mp, auxx, auxy, &minx, &miny, &min);
+  compA(mp, auxx, auxy, &min);
   if(min != -1)
     return min;
   return 0;
@@ -99,12 +99,10 @@ in: mp -- map of city
     minx, miny -- coordinats of minnimal cost
     min -- cost of minimal cost position to date
 */
-void compA (map *mp, int newx, int newy, int *minx, int *miny, int *min){
+void compA (map *mp, int newx, int newy, int *min){
   if (inMapCheck(mp, newx, newy) == 1){
     if (*min > mp->map[newx][newy] || *min == -1){
       *min = mp->map[newx][newy];
-      *minx = newx;
-      *miny = newy;
     }
   }
 }
