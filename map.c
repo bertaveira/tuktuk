@@ -14,7 +14,7 @@ typedef struct _map {
   int *points[2];
 } map;
 
-
+// onde estão estes comentarios?
 map* readMap(FILE * fp) {
   int a = 0, i, x, y, j;
 
