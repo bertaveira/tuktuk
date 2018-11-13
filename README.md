@@ -20,7 +20,7 @@ After that you can run the program using a command like this:
 ./tuktuk <name>.cities
 ```
 
-### Input File
+## Input File
 
 The file (<name>.cities) used as an argument to the program should be like the one bellow.
 
