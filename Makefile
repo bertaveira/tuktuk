@@ -19,6 +19,6 @@ funcs.o: funcs.h defs.h funcs.c
 
 
 clean:
-	rm main $(OBJECTS)
+	rm tuktuk $(OBJECTS)
 
 # DO NOT DELETE
