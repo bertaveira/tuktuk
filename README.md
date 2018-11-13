@@ -61,3 +61,23 @@ After that the rest is the map where the numbers are the cost (0 means you cant 
 4 3 2 1 2 3 4 5 3 0 1
 1 7 2 3 2 3 2 3 2 3 1
 ```
+
+
+## Output File
+
+The output file (name.walks) of the program should be like the one bellow.
+
+The first line is the same as the input file in the first 4 arguments. The next two are: cost of the less expensive path || number of moves of the path.
+It's important to note that if no path was found, the 5 argument (in this example with value = 11) will be -1 and the 6 (with value 6 in the example) will be 0.
+
+After that the rest is the path (coordinates and cost)
+
+```
+10 11 A 2 11 6
+1 2 1
+2 4 2
+3 6 2
+4 8 3
+5 10 1
+7 9 2
+```
