@@ -3,11 +3,8 @@
 
 #include "defs.h"
 
-
-map* readMap(FILE *);
-
 typedef struct _map map;
 
-
+map* readMap(FILE *);
 
 #endif
