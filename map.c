@@ -135,5 +135,5 @@ void modeVarA(map *mp, FILE *fpw){
 
   res = varA(mp, getPOI(mp, 1, 0), getPOI(mp, 0, 0));
   if(res != 0) aux = 1;
-  fprintf(fpw, "%d %d %c %d %d %d\n", mp->x, mp->y, mp->mode, mp->nPoints, aux, res);
+  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, res);
 }
