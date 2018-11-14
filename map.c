@@ -115,7 +115,7 @@ return: 1 if valid
         0 if unvalid
 */
 int inMapCheck (map *mp, int x, int y){
-  if (x > 0 && x < mp->x && y > 0 && y < mp->y && mp->map[y][x] != 0)
+  if (x >= 0 && x < mp->x && y >= 0 && y < mp->y && mp->map[y][x] != 0)
     return 1;
   return 0;
 
@@ -133,7 +133,7 @@ char getPOI(map * mp, int a, int b) {
 void modeVarA(map *mp, FILE *fpw){
   int res = 0, aux = -1;
 
-  res = varA(mp, getPOI(mp, 0, 0), getPOI(mp, 1, 0));
+  res = varA(mp, getPOI(mp, 1, 0), getPOI(mp, 0, 0));
   if(res != 0) aux = 1;
   fprintf(fpw, "%d %d %c %d %d %d\n", mp->x, mp->y, mp->mode, mp->nPoints, aux, res);
 }
