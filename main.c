@@ -30,14 +30,16 @@
 int main(int argc, char **argv) {
   map *mp;
   FILE *fp = NULL, *fpw = NULL;
-  char *outfilename = NULL;
+  char *outfilename = NULL, *aux;
 
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
-  outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])+strlen(".valid")+1));
+  outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])));
   nullCheck((Item *) outfilename);
   strcpy(outfilename, argv[1]);
+  aux = strrchr(outfilename, '.');
+  *aux = '\0';
   strcat(outfilename, ".valid");
   fpw = fopen(outfilename, "w");
 
