@@ -30,7 +30,7 @@
 int main(int argc, char **argv) {
   map *mp;
   FILE *fp = NULL, *fpw = NULL;
-  char *outfilename = NULL, *aux;
+  char *outfilename = NULL, *aux = 0;
 
   if (argc < 2)
     return(0);
@@ -39,9 +39,10 @@ int main(int argc, char **argv) {
   outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])+1));
   nullCheck((Item) outfilename);
   strcpy(outfilename, argv[1]);
-  aux = strrchr(outfilename, '.');
+  aux = strstr(outfilename, ".cities");
+  nullCheck((Item)aux);
   *aux = '\0';
-  strcat(outfilename, ".valid");
+  strcat(outfilename, ".valid\0");
   fpw = fopen(outfilename, "w");
 
   while (( mp = readMap(fp)) != NULL) {
