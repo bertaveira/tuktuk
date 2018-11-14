@@ -53,6 +53,8 @@ int main(int argc, char **argv) {
         modeVarB(mp, fpw);
         freeMap(mp);
         break;
+      default:
+        printerror(mp, fpw);
     }
   }
 

@@ -15,5 +15,6 @@ void modeVarA(map *, FILE *);
 int validMove(map *, int);
 void modeVarB(map *, FILE *);
 void freeMap(map *);
+void printerror(map *,FILE *);
 
 #endif
