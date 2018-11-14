@@ -131,7 +131,7 @@ char getMode(map * mp) {
   return mp->mode;
 }
 
-char getPOI(map * mp, int a, int b) {
+int getPOI(map * mp, int a, int b) {
   return mp->points[a][b];
 }
 
