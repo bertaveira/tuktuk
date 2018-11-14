@@ -6,23 +6,23 @@
 #include "funcs.h"
 
 typedef struct _map {
-  int ** map;
-  int y;
-  int x;
+  short int ** map;
+  short int y;
+  short int x;
   char mode;
-  int nPoints;
-  int *points[2];
+  short int nPoints;
+  short int *points[2];
 } map;
 
 
 map* readMap(FILE * fp) {
-  int a = 0, i, x, y, j;
+  short int a = 0, i, x, y, j;
 
   //struct that contains the map and all the parameters
   map *mp = (map *)malloc(sizeof(map));
   nullCheck((Item)mp);
   //read first line
-  a = fscanf(fp, "%d %d %c %d", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
+  a = fscanf(fp, "%hd %hd %c %hd", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
   if ( a == EOF) {
     free(mp);
     return NULL;
@@ -30,28 +30,28 @@ map* readMap(FILE * fp) {
 
   if( mp->mode != 'A' && mp->mode != 'B') return mp;
   //alloc space for points
-  mp->points[0] = (int *)malloc(sizeof(int)* mp->nPoints);
+  mp->points[0] = (short int *)malloc(sizeof(short int)* mp->nPoints);
   nullCheck((Item)mp->points[0]);
-  mp->points[1] = (int *)malloc(sizeof(int)* mp->nPoints);
+  mp->points[1] = (short int *)malloc(sizeof(short int)* mp->nPoints);
   nullCheck((Item)mp->points[1]);
 
   //save the points given
   for(i = 0; i < mp->nPoints; i++) {
-    a = fscanf(fp, "%d %d", &y, &x);
+    a = fscanf(fp, "%hd %hd", &y, &x);
     scanCheck(a, 2);
     mp->points[0][i] = y;
     mp->points[1][i] = x;
   }
   //map => mp->map[y][x]
-  mp->map = (int **)malloc(sizeof(int*)*mp->y);
+  mp->map = (short int **)malloc(sizeof(short int*)*mp->y);
   nullCheck((Item)mp->map);
 
   for(i = 0; i < mp->y; i++) {
-    mp->map[i] = (int *)malloc(sizeof(int)*mp->x);
+    mp->map[i] = (short int *)malloc(sizeof(short int)*mp->x);
     nullCheck((Item)mp->map[i]);
     //fill matrix with cost
     for(j = 0; j < mp->x; j++){
-      a = fscanf(fp, "%d", &mp->map[i][j]);
+      a = fscanf(fp, "%hd", &mp->map[i][j]);
       scanCheck(a, 1);
     }
   }
@@ -72,11 +72,11 @@ internal:
   min -- cost of the lowst cost possition to date
   minx, miny -- coordinats of the minimal cost possition to date
 */
-int varA (map *mp, int x, int y){
+short int varA (map *mp, short int x, short int y){
   if(inMapCheck(mp, x, y) == 0){
     return 0;
   }
-  int auxx, auxy, min = -1;
+  short int auxx, auxy, min = -1;
   auxx = x-2;
   auxy = y-1;
   compA(mp, auxx, auxy, &min);
@@ -107,7 +107,7 @@ in: mp -- map of city
     minx, miny -- coordinats of minnimal cost
     min -- cost of minimal cost position to date
 */
-void compA (map *mp, int newx, int newy, int *min){
+void compA (map *mp, short int newx, short int newy, short int *min){
   if (inMapCheck(mp, newx, newy) == 1){
     if (*min > mp->map[newy][newx] || *min == -1){
       *min = mp->map[newy][newx];
@@ -122,7 +122,7 @@ in: mp -- map of city
 return: 1 if valid
         0 if unvalid
 */
-int inMapCheck (map *mp, int x, int y){
+short int inMapCheck (map *mp, short int x, short int y){
   if (x >= 0 && x < mp->x && y >= 0 && y < mp->y && mp->map[y][x] != 0)
     return 1;
   return 0;
@@ -133,12 +133,12 @@ char getMode(map * mp) {
   return mp->mode;
 }
 
-int getPOI(map * mp, int a, int b) {
+short int getPOI(map * mp, short int a, short int b) {
   return mp->points[a][b];
 }
 
 void modeVarA(map *mp, FILE *fpw){
-  int res = 0, aux = -1;
+  short int res = 0, aux = -1;
 
   if(mp->nPoints == 1)
     res = varA(mp, getPOI(mp, 1, 0), getPOI(mp, 0, 0));
@@ -147,8 +147,8 @@ void modeVarA(map *mp, FILE *fpw){
 }
 
 
-int validMove(map *mp, int i) {
-  int x, y;
+short int validMove(map *mp, short int i) {
+  short int x, y;
   if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0) {
     return 0;
   } else {
@@ -162,7 +162,7 @@ int validMove(map *mp, int i) {
 
 
 void modeVarB(map *mp, FILE *fpw){
-  int aux = -1, sum = 0;
+  short int aux = -1, sum = 0;
 
   for(int i = 0; i < mp->nPoints; i++){
     if( validMove(mp, i) ){
