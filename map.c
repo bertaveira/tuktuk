@@ -27,6 +27,8 @@ map* readMap(FILE * fp) {
     free(mp);
     return NULL;
   }
+
+  if( mp->mode != 'A' && mp->mode != 'B') return mp;
   //alloc space for points
   mp->points[0] = (int *)malloc(sizeof(int)* mp->nPoints);
   nullCheck((Item)mp->points[0]);
