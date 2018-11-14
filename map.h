@@ -10,7 +10,7 @@ int varA (map *, int, int);
 void compA (map *, int, int, int *);
 int inMapCheck (map *, int, int);
 char getMode(map *);
-char getPOI(map *, int, int);
+int getPOI(map *, int, int);
 void modeVarA(map *, FILE *);
 int validMove(map *, int);
 void modeVarB(map *, FILE *);
