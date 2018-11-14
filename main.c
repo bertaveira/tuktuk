@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     return(0);
   fp = fopen(argv[1], "r");
   outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])));
-  nullCheck((Item *) outfilename);
+  nullCheck((Item) outfilename);
   strcpy(outfilename, argv[1]);
   aux = strrchr(outfilename, '.');
   *aux = '\0';

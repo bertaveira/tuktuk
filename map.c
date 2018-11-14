@@ -23,7 +23,7 @@ map* readMap(FILE * fp) {
   nullCheck((Item)mp);
   //read first line
   a = fscanf(fp, "%d %d %c %d", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
-  if ( a == 0) return NULL;
+  if ( a == EOF) return NULL;
 
   //alloc space for points
   mp->points[0] = (int *)malloc(sizeof(int)* mp->nPoints);
