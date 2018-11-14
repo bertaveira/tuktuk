@@ -145,10 +145,11 @@ void modeVarA(map *mp, FILE *fpw){
 void modeVarB(map *mp, FILE *fpw){
   int aux = -1, sum = -1;
 
-  for(int i = 0; i< mp->nPoints && sum != 0; i++){
-    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]))
+  for(int i = 0; i <mp->nPoints && sum != 0; i++){
+    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i])){     // erro está aqui
       sum = 0;
-    sum += mp->map[mp->points[1][i]][mp->points[0][i]];
+    }else {sum += mp->map[mp->points[1][i]][mp->points[0][i]];    // ou aqui ;)
+    }
   }
 
   if(sum != 0) aux = 1;
