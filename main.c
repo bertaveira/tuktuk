@@ -59,5 +59,5 @@ int main(int argc, char **argv) {
   free(outfilename);
   fclose(fpw);
   fclose(fp);
-
+  return 0;
 }
