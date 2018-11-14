@@ -157,7 +157,7 @@ int validMove(map *mp, int i) {
 
 
 void modeVarB(map *mp, FILE *fpw){
-  int aux = -1, sum = -1;
+  int aux = -1, sum = 0;
 
   for(int i = 0; i < mp->nPoints; i++){
     if( validMove(mp, i) ){
