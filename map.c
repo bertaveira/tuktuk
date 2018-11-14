@@ -68,6 +68,9 @@ internal:
   minx, miny -- coordinats of the minimal cost possition to date
 */
 int varA (map *mp, int x, int y){
+  if(inMapCheck(mp, x, y) == 0){
+    return 0;
+  }
   int auxx, auxy, min = -1;
   auxx = x-2;
   auxy = y-1;
@@ -118,7 +121,6 @@ int inMapCheck (map *mp, int x, int y){
   if (x >= 0 && x < mp->x && y >= 0 && y < mp->y && mp->map[y][x] != 0)
     return 1;
   return 0;
-
 }
 
 
