@@ -136,7 +136,8 @@ char getPOI(map * mp, int a, int b) {
 void modeVarA(map *mp, FILE *fpw){
   int res = 0, aux = -1;
 
-  res = varA(mp, getPOI(mp, 1, 0), getPOI(mp, 0, 0));
+  if(mp->nPoints == 1)
+    res = varA(mp, getPOI(mp, 1, 0), getPOI(mp, 0, 0));
   if(res != 0) aux = 1;
   fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, res);
 }
