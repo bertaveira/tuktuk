@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
         modeVarA(mp, fpw);
         break;
       case 'B':
-
+        modeVarB(mp, fpw);
         break;
     }
   }

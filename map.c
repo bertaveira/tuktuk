@@ -140,3 +140,17 @@ void modeVarA(map *mp, FILE *fpw){
   if(res != 0) aux = 1;
   fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, res);
 }
+
+
+void modeVarB(map *mp, FILE *fpw){
+  int aux = -1, sum = -1;
+
+  for(int i = 0; i< mp->nPoints && sum != 0; i++){
+    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]))
+      sum = 0;
+    sum += mp->map[mp->points[1][i]][mp->points[0][i]];
+  }
+
+  if(sum != 0) aux = 1;
+  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, sum);
+}
