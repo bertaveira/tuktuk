@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
+  nullCheck((Item)fp);
   outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])+1));
   nullCheck((Item) outfilename);
   strcpy(outfilename, argv[1]);
@@ -57,7 +58,7 @@ int main(int argc, char **argv) {
         printerror(mp, fpw);
     }
   }
-  
+
   free(outfilename);
   fclose(fpw);
   fclose(fp);
