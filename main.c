@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
         printerror(mp, fpw);
     }
   }
-
+  
   free(outfilename);
   fclose(fpw);
   fclose(fp);
