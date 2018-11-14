@@ -142,13 +142,29 @@ void modeVarA(map *mp, FILE *fpw){
 }
 
 
+int validMove(map *mp, int i) {
+  int x, y;
+  if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0) {
+    return 0;
+  } else {
+    if (i < 1) return 1;
+    x =  mp->points[1][i] -mp->points[1][i-1];
+    y =  mp->points[0][i] -mp->points[0][i-1];
+    if ( abs(x) + abs(y) == 3 ) return 1;
+    else return 0;
+  }
+}
+
+
 void modeVarB(map *mp, FILE *fpw){
   int aux = -1, sum = -1;
 
-  for(int i = 0; i <mp->nPoints && sum != 0; i++){
-    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i])){     // erro está aqui
+  for(int i = 0; i <mp->nPoints; i++){
+    if( validMove(mp, i) ){
+      sum = sum + mp->map[mp->points[1][i]][mp->points[0][i]];
+    }else{
       sum = 0;
-    }else {sum += mp->map[mp->points[1][i]][mp->points[0][i]];    // ou aqui ;)
+      break;
     }
   }
 
