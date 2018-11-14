@@ -6,14 +6,14 @@
 
 void nullCheck(Item* i) {
   if ( i == NULL) {
-    printf("erro de alocação\n");
+    //printf("erro de alocação\n");
     exit(0);
   }
 }
 
 void scanCheck(int a, int b) {
   if ( a != b) {
-    printf("erro a ler ficheiro- numero de parametros errado\n");
+    //printf("erro a ler ficheiro- numero de parametros errado\n");
     exit(0);
   }
 }
