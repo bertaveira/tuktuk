@@ -150,7 +150,7 @@ int validMove(map *mp, int i) {
     if (i < 1) return 1;
     x =  mp->points[1][i] -mp->points[1][i-1];
     y =  mp->points[0][i] -mp->points[0][i-1];
-    if ( abs(x) + abs(y) == 3 && x != = && y != 0) return 1;
+    if ( abs(x) + abs(y) == 3 && (x != 0) && (y != 0)) return 1;
     else return 0;
   }
 }
