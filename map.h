@@ -14,5 +14,6 @@ char getPOI(map *, int, int);
 void modeVarA(map *, FILE *);
 int validMove(map *, int);
 void modeVarB(map *, FILE *);
+void freeMap(map *);
 
 #endif

@@ -171,3 +171,16 @@ void modeVarB(map *mp, FILE *fpw){
   if(sum != 0) aux = 1;
   fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, sum);
 }
+
+
+
+
+  void freeMap(map *mp){
+      free(mp->points[0]);
+      free(mp->points[1]);
+    for(int i=0; i<mp->y; i++){
+      free(mp->map[i]);
+    }
+    free(mp->map);
+    free(mp);
+  }

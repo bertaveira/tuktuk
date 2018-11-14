@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   if (argc < 2)
     return(0);
   fp = fopen(argv[1], "r");
-  outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])));
+  outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])+1));
   nullCheck((Item) outfilename);
   strcpy(outfilename, argv[1]);
   aux = strrchr(outfilename, '.');
@@ -47,13 +47,16 @@ int main(int argc, char **argv) {
     switch (getMode(mp)) {
       case 'A':
         modeVarA(mp, fpw);
+        freeMap(mp);
         break;
       case 'B':
         modeVarB(mp, fpw);
+        freeMap(mp);
         break;
     }
   }
 
+  free(outfilename);
   fclose(fpw);
   fclose(fp);
 
