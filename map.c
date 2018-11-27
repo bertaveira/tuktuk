@@ -97,6 +97,10 @@ void modeA(map *mp, FILE *fpw){
 
 
 
+void shortestPath(map *mp, int i) {
+  
+}
+
 
 
 
