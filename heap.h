@@ -5,7 +5,7 @@
 
 void heapInit(int); /* inicializa fila com prioridade */
 /* com número máximo de items */
-BOOL heapEmpty(); /* testa fila vazia */
+int heapEmpty(); /* testa fila vazia */
 void heapInsert(Item); /* insere item */
 Item heapDelmax(); /* elimina item de maior prioridade */
 
