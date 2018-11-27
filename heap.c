@@ -24,10 +24,15 @@ void heapInsert(Item it) {
   queue[size++] = it;
 }
 
-Item heapDelmax() {
+void heapDelmax() {
   int i = 0;
   while( queue[i] != NULL) {
     queue[i] = queue[i+1];
     i++;
   }
+}
+
+
+Item heapGetMax() {
+  return (Item)queue[0];
 }

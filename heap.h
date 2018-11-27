@@ -3,10 +3,10 @@
 
 #include "defs.h"
 
-void heapInit(int); /* inicializa fila com prioridade */
-/* com número máximo de items */
-int heapEmpty(); /* testa fila vazia */
-void heapInsert(Item); /* insere item */
-Item heapDelmax(); /* elimina item de maior prioridade */
+void heapInit(int);
+int heapEmpty();
+void heapInsert(Item);
+void heapDelmax();
+Item heapGetMax();
 
 #endif

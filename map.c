@@ -5,6 +5,8 @@
 #include "map.h"
 #include "funcs.h"
 
+#define PF {{-1,1,2,2,1,-1,-2,-2}, {-2,-2,-1,1,2,2,1,-1}}
+
 typedef struct _map {
   short int ** map;
   short int y;
@@ -17,6 +19,8 @@ typedef struct _map {
 typedef struct _node {
   short int cost;
   short int org[2];
+  short int y;
+  short int x;
 } node;
 
 
@@ -97,11 +101,33 @@ void modeA(map *mp, FILE *fpw){
 
 
 
-void shortestPath(map *mp, int i) {
-  
+void shortestPath(map *mp, int b, int a) {
+  int i, j;
+  node ***mtx = (node ***)malloc(sizeof(node**)*mp->y);
+  node *st = (node *)malloc(sizeof(node));
+
+  for(i = 0; i< mp->y; i++) {
+    mtx[i] = (node **)malloc(sizeof(node*)*mp->x);
+    for(j = 0; j<mp->x; j++) {
+      mtx[i][j] = NULL;
+    }
+  }
+  st->custo = 0;
+  st->org[0] = -1;
+  st->org[1] = -1;
+  st->y = mp->points[0][a];
+  st->x = mp->points[1][a];
+
+  while (st != mtx[mp->points[0][b]][mp->points[1][b]]) {
+    addNodes(st, mtx);
+    st = heapGetMax();
+  }
 }
 
 
+void addNodes(node org, node ***mtx) {
+
+}
 
 
 void modeB(map *mp, FILE *fpw){
