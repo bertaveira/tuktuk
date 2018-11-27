@@ -14,6 +14,11 @@ typedef struct _map {
   short int *points[2];
 } map;
 
+typedef struct _node {
+  short int cost;
+  short int org[2];
+} node;
+
 
 map* readMap(FILE * fp) {
   short int a = 0, i, x, y, j;
@@ -59,61 +64,6 @@ map* readMap(FILE * fp) {
 }
 
 
-/*
-in:
-  mp -- city map
-  x and y -- coordinats of starting position
-out:
-  int: 0 if not posible
-       >0 minimal cost jump
-internal:
-  auxx,auxy -- ints to store new possibel possition
-  min -- cost of the lowst cost possition to date
-  minx, miny -- coordinats of the minimal cost possition to date
-*/
-short int varA (map *mp, short int x, short int y){
-  if(inMapCheck(mp, x, y) == 0){
-    return 0;
-  }
-  short int auxx, auxy, min = -1;
-  auxx = x-2;
-  auxy = y-1;
-  compA(mp, auxx, auxy, &min);
-  auxy = y+1;
-  compA(mp, auxx, auxy, &min);
-  auxx = x+2;
-  compA(mp, auxx, auxy, &min);
-  auxy = y-1;
-  compA(mp, auxx, auxy, &min);
-  auxx = x+1;
-  auxy = y+2;
-  compA(mp, auxx, auxy, &min);
-  auxy = y-2;
-  compA(mp, auxx, auxy, &min);
-  auxx = x-1;
-  compA(mp, auxx, auxy, &min);
-  auxy = y+2;
-  compA(mp, auxx, auxy, &min);
-  if(min != -1)
-    return min;
-  return 0;
-}
-
-
-/*
-in: mp -- map of city
-    newx, newy -- new coordinats to compare
-    minx, miny -- coordinats of minnimal cost
-    min -- cost of minimal cost position to date
-*/
-void compA (map *mp, short int newx, short int newy, short int *min){
-  if (inMapCheck(mp, newx, newy) == 1){
-    if (*min > mp->map[newy][newx] || *min == -1){
-      *min = mp->map[newy][newx];
-    }
-  }
-}
-
 
 /*
 in: mp -- map of city
@@ -136,46 +86,23 @@ short int getPOI(map * mp, short int a, short int b) {
   return mp->points[a][b];
 }
 
-void modeVarA(map *mp, FILE *fpw){
-  short int res = 0, aux = -1;
 
-  if(mp->nPoints == 1)
-    res = varA(mp, getPOI(mp, 1, 0), getPOI(mp, 0, 0));
-  if(res != 0) aux = 1;
-  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, res);
+
+
+void modeA(map *mp, FILE *fpw){
+
+
+
 }
 
 
-short int validMove(map *mp, short int i) {
-  short int x, y;
-  if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0) {
-    return 0;
-  } else {
-    if (i < 1) return 1;
-    x =  mp->points[1][i] -mp->points[1][i-1];
-    y =  mp->points[0][i] -mp->points[0][i-1];
-    if ( abs(x) + abs(y) == 3 && (x != 0) && (y != 0)) return 1;
-    else return 0;
-  }
-}
 
 
-void modeVarB(map *mp, FILE *fpw){
-  short int aux = -1, sum = 0;
 
-  for(int i = 0; i < mp->nPoints; i++){
-    if( validMove(mp, i) ){
-      if(i>0){
-        sum = sum + mp->map[mp->points[0][i]][mp->points[1][i]];
-      }
-    }else{
-      sum = 0;
-      break;
-    }
-  }
 
-  if(sum != 0) aux = 1;
-  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, sum);
+void modeB(map *mp, FILE *fpw){
+
+
 }
 
 
