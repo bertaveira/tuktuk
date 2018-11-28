@@ -112,7 +112,6 @@ short int **shortestPath(map *mp, int a, int b) {
       mtx[i][j] = 0;
     }
   }
-
   st->cost = 0;
   st->org[0] = -1;
   st->org[1] = -1;
@@ -123,6 +122,8 @@ short int **shortestPath(map *mp, int a, int b) {
     addNodes(mp, st, mtx);
     st = heapGetMax();
   }
+
+
 }
 
 
@@ -156,6 +157,18 @@ void modeB(map *mp, FILE *fpw){
 }
 
 
+int compNodes(Item a, Item b) {
+  if( (node *)a->cost > (node *)b->cost) return 0;
+  else return 1;
+}
+
+short int getX(Item a) {
+  return (node *)a->x;
+}
+
+short int getY(Item a) {
+  return (node *)a->y;
+}
 
 
 void freeMap(map *mp){
