@@ -6,7 +6,6 @@
 void heapInit(int);
 int heapEmpty();
 void heapInsert(Item);
-void heapDelmax();
 Item heapGetMax();
 
 #endif
