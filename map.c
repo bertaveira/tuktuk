@@ -4,6 +4,7 @@
 
 #include "map.h"
 #include "funcs.h"
+#include "heap.h"
 
 #define PF {{-1,1,2,2,1,-1,-2,-2}, {-2,-2,-1,1,2,2,1,-1}}
 
@@ -142,7 +143,7 @@ void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
         new->cost = org->cost + mp->map[new->y][new->x];
         heapInsert(new);
       } else if (mtx[y][x] > 0) {
-        
+
       }
     }
   }
