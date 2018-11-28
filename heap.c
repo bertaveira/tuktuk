@@ -6,7 +6,7 @@
 #include "funcs.h"
 
 static Item *queue;
-static int Qsize
+static int Qsize;
 
 void heapInit(int size) {
   queue = (Item *)malloc(sizeof(Item)*size);

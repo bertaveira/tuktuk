@@ -101,43 +101,49 @@ void modeA(map *mp, FILE *fpw){
 
 
 
-void shortestPath(map *mp, int b, int a) {
+short int **shortestPath(map *mp, int a, int b) {
   int i, j;
-  node ***mtx = (node ***)malloc(sizeof(node**)*mp->y);
+  short int mtx[mp->y][mp->x];
   node *st = (node *)malloc(sizeof(node));
 
   for(i = 0; i< mp->y; i++) {
-    mtx[i] = (node **)malloc(sizeof(node*)*mp->x);
     for(j = 0; j<mp->x; j++) {
-      mtx[i][j] = NULL;
+      mtx[i][j] = 0;
     }
   }
+
   st->cost = 0;
   st->org[0] = -1;
   st->org[1] = -1;
   st->y = mp->points[0][a];
   st->x = mp->points[1][a];
 
-  while (st != mtx[mp->points[0][b]][mp->points[1][b]]) {
+  while (st->y != mp->points[0][b] || st->x != mp->points[1][b]) {
     addNodes(mp, st, mtx);
     st = heapGetMax();
   }
 }
 
 
-void addNodes(map *mp, node org, node ***mtx) {
-  int i;
+void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
+  int i, x, y;
   node *new;
 
   for(i = 0; i<8; i++) {
-    if( inMapCheck(mp, org[1]+PF[1][i], org[0]+PF[0][i]) ) {
-      new = (node *)malloc(sizeof(node));
-      new->y = org[0]+PF[0][i];
-      new->x = org[1]+PF[1][i];
-      new->org[0] = org->y;
-      new->org[1] = org->x;
-      new->cost = org->cost + mp->map[new->y][new->x];
-      heapInsert(new);
+    x= org[1]+PF[1][i];
+    y= org[0]+PF[0][i];
+    if( inMapCheck(mp, x, y) ) {
+      if(mtx[y][x] == 0) {
+        new = (node *)malloc(sizeof(node));
+        new->y = org[0]+PF[0][i];
+        new->x = org[1]+PF[1][i];
+        new->org[0] = org->y;
+        new->org[1] = org->x;
+        new->cost = org->cost + mp->map[new->y][new->x];
+        heapInsert(new);
+      } else if (mtx[y][x] > 0) {
+        
+      }
     }
   }
 }
