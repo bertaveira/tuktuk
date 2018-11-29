@@ -21,19 +21,22 @@ int heapEmpty() {
 }
 
 void heapInsert(Item it, short int **mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)) {
-  queue[Qsize++] = it;
+  queue[Qsize] = it;
+  mtx[gety(it)][getx(it)] = Qsize;
+  qsize++;
   Fixup(Qsize, mtx, comp, gety, getx);
 }
 
 
 
-//falta alterar o mtx para alterar para lido
+//mtx fica sempre a -1 (fazer lista de saida simplifica)
 Item heapGetMax(short int ** mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)) {
   Item aux;
   aux = queue[0];
   Qsize--;
   queue[0] = queue[Qsize];
   Fixdown(0, mtx, comp, gety, getx);
+  mtx[gety(aux)][gety(aux)] = -1;
 
 
   return aux;

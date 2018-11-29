@@ -5,7 +5,9 @@
 
 void heapInit(int);
 int heapEmpty();
-void heapInsert(Item);
-Item heapGetMax();
+void heapInsert(Item, short int **, int *(Item, Item), short int *(Item), short int *(Item));
+Item heapGetMax(short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
+void Fixdown(int, short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
+void Fixup(int, short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
 
 #endif
