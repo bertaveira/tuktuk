@@ -228,16 +228,16 @@ void modeB(map *mp, FILE *fpw){
 
 
 int compNodes(Item a, Item b) {
-  if( (node *)a->cost > (node *)b->cost) return 0;
+  if( ((node *)a)->cost > ((node *)b)->cost) return 0;
   else return 1;
 }
 
 short int getX(Item a) {
-  return (node *)a->x;
+  return ((node *)a)->x;
 }
 
 short int getY(Item a) {
-  return (node *)a->y;
+  return ((node *)a)->y;
 }
 
 
