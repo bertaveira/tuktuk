@@ -198,20 +198,20 @@ void addNodes(map *mp, node *org, short int **mtx) {
   node *new;
 
   for(i = 0; i<8; i++) {
-    x= org[1]+PF[1][i];
-    y= org[0]+PF[0][i];
+    x= org->x +PF[1][i];
+    y= org->y +PF[0][i];
     if( inMapCheck(mp, x, y) ) {
       if(mtx[y][x] == 0) {
         new = (node *)malloc(sizeof(node));
-        new->y = org[0]+PF[0][i];
-        new->x = org[1]+PF[1][i];
+        new->y = y;
+        new->x = x;
         new->org[0] = org->y;
         new->org[1] = org->x;
-        new->cost = org->cost + mp->map[new->y][new->x];
+        new->cost = org->cost + mp->map[y][x];
         heapInsert(new, mtx, compNodes, getY, getX);
       } else if (mtx[y][x] > 0) {
         new = getItem(mtx[y][x]);
-        cost = org->cost + mp->map[org[0]+PF[0][i]][org[1]+PF[1][i]];
+        cost = org->cost + mp->map[y][x];
         if(new->cost > cost ) {
           new->cost = cost;
           Fixup( mtx[y][x] , mtx, compNodes, getY, getX);
