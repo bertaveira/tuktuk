@@ -48,11 +48,11 @@ int main(int argc, char **argv) {
   while (( mp = readMap(fp)) != NULL) {
     switch (getMode(mp)) {
       case 'A':
-        modeVarA(mp, fpw);
+        modeA(mp, fpw);
         freeMap(mp);
         break;
       case 'B':
-        modeVarB(mp, fpw);
+        modeB(mp, fpw);
         freeMap(mp);
         break;
       default:
