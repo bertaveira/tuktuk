@@ -8,21 +8,21 @@
 
 #define PF {{-1,1,2,2,1,-1,-2,-2}, {-2,-2,-1,1,2,2,1,-1}}
 
-typedef struct _map {
+struct _map {
   short int ** map;
   short int y;
   short int x;
   char mode;
   short int nPoints;
   short int *points[2];
-} map;
+};
 
-typedef struct _node {
+struct _node {
   short int cost;
   short int org[2];
   short int y;
   short int x;
-} node;
+};
 
 
 map* readMap(FILE * fp) {
@@ -103,23 +103,50 @@ void modeA(map *mp, FILE *fpw){
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == 0) fprintf(fpw, "-1 0\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n");
   else {
-    fprintf(fpw, "&hd ", lt->item->cost); // print total cost
+    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
+    clearList(lt);
     printPoints(lt, fpw, &count); // print list of points of best path
   }
 
 }
 
 
+void clearList(list *lt) {
+  list *aux = lt, *trash;
+  int x, y;
 
-void printPoints(list *lt, Filr *fpw, int *count) {
+  y = ((node *)(lt->item))->org[0];
+  x = ((node *)(lt->item))->org[1];
+
+  while (aux->next != NULL) {
+    if (y == ((node *)(aux->next->item))->y && x == ((node *)(aux->next->item))->x) {
+      y = ((node *)(aux->next->item))->org[0];
+      x = ((node *)(aux->next->item))->org[1];
+    } else {
+      trash = aux->next;
+      aux->next = trash->next;
+      free(trash);
+    }
+    aux = aux->next;
+  }
+}
+
+
+
+void printPoints(list *lt, FILE *fpw, int *count) {
+  int cost;
 
   *count = *count +1; //count number of points
-  if (lt->next != NULL) printPoints(lt->next, fpw, count); // recursive call
-  else fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
-
-  fprintf(fpw, "%hd %hd %hd\n", lt->item->y, lt->item->x, lt->item->cost- lt->next->item->cost); //print points
+  if (lt->next != NULL) {
+    printPoints(lt->next, fpw, count); // recursive call
+    cost = ((node *)(lt->item))->cost- ((node *)(lt->next->item))->cost)
+  } else {
+    fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+    cost = ((node *)(lt->item))->cost;
+  }
+  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
 }
 
 
@@ -141,31 +168,31 @@ list *shortestPath(map *mp, int a) {
   st->org[1] = -1;
   st->y = mp->points[0][a];
   st->x = mp->points[1][a];
+  // first 2 nodes
+  lt = (list *)malloc(sizeof(list));
+  lt->item = st;
+  aux = (list *)malloc(sizeof(list));
+  lt->next = aux;
+  addNodes(mp, st, mtx);
+  st = heapGetMax(mtx, compNodes, getY, getX);
+  aux->item = st;
+  aux->next = NULL;
   // start searching for the best path
   while (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1]) {
     addNodes(mp, st, mtx);
     st = heapGetMax(mtx, compNodes, getY, getX);
-  }
-
-  // build list of best path (backtracing the path found)
-  lt = (list *)malloc(sizeof(list));
-  lt->item = st;
-  st = getItem( mtx[st->org[0]][st->org[1]]);
-  aux = (list *)malloc(sizeof(list));
-  aux->item = st;
-  lt->next = aux;
-  while(st->org[0] != -1) {
-    st = getItem(mtx[st->org[0]][st->org[1]]);
     aux->next = (list *)malloc(sizeof(list));
     aux = aux->next;
     aux->item = st;
     aux->next = NULL;
   }
+
+
   return lt;
 }
 
 
-void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
+void addNodes(map *mp, node *org, short int **mtx) {
   int i, x, y, cost;
   node *new;
 
@@ -184,7 +211,7 @@ void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
       } else if (mtx[y][x] > 0) {
         new = getItem(mtx[st->org[0]][st->org[1]]);
         cost = org->cost + mp->map[org[0]+PF[0][i]][org[1]+PF[1][i]];
-        if(new->cost < cost ) {
+        if(new->cost > cost ) {
           new->cost = cost;
           Fixup( mtx[st->org[0]][st->org[1]] , mtx, compNodes, getY, getX);
         }
