@@ -6,7 +6,7 @@
 #include "funcs.h"
 #include "heap.h"
 
-#define PF {{-1,1,2,2,1,-1,-2,-2}, {-2,-2,-1,1,2,2,1,-1}}
+const short int PF[2][8] = {{-1,1,2,2,1,-1,-2,-2},{-2,-2,-1,1,2,2,1,-1}};
 
 struct _map {
   short int ** map;
@@ -121,7 +121,7 @@ void clearList(list *lt) {
   x = ((node *)(lt->item))->org[1];
 
   while (aux->next != NULL) {
-    if (y == ((node *)(aux->next->item))->y && x == ((node *)(aux->next->item))->x) {
+    if (y == ((node *)(aux->next->item))->y && x == ((node *)(aux->next->item))->x && ((node *)(aux->next->item))->org[0] != -1) {
       y = ((node *)(aux->next->item))->org[0];
       x = ((node *)(aux->next->item))->org[1];
     } else {
@@ -141,7 +141,7 @@ void printPoints(list *lt, FILE *fpw, int *count) {
   *count = *count +1; //count number of points
   if (lt->next != NULL) {
     printPoints(lt->next, fpw, count); // recursive call
-    cost = ((node *)(lt->item))->cost- ((node *)(lt->next->item))->cost)
+    cost = ((node *)(lt->item))->cost- ((node *)(lt->next->item))->cost;
   } else {
     fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
     cost = ((node *)(lt->item))->cost;
@@ -153,12 +153,13 @@ void printPoints(list *lt, FILE *fpw, int *count) {
 
 list *shortestPath(map *mp, int a) {
   int i, j;
-  short int mtx[mp->y][mp->x];
+  short int **mtx = (short int **)malloc(sizeof(short int *)*mp->y);
   node *st = (node *)malloc(sizeof(node));
   list *lt, *aux;
 
 // fazer para coisas com um unico passo--------------------------------------------------------
   for(i = 0; i< mp->y; i++) {
+    mtx[i] = (short int *)malloc(sizeof(short int)*mp->x);
     for(j = 0; j<mp->x; j++) {
       mtx[i][j] = 0;
     }
@@ -233,11 +234,11 @@ int compNodes(Item a, Item b) {
 }
 
 short int getX(Item a) {
-  return (node *)a->x;
+  return ((node *)a->x);
 }
 
 short int getY(Item a) {
-  return (node *)a->y;
+  return ((node *)a->y);
 }
 
 

@@ -5,7 +5,7 @@ typedef void *Item;
 
 typedef struct _list {
   Item item;
-  Item next;
+  struct _list *next;
 } list;
 
 #endif
