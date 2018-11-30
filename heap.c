@@ -28,8 +28,8 @@ void heapInsert(Item it, short int **mtx, int (*comp)(Item, Item), short int (*g
     heapInit(5000);
   queue[Qsize] = it;
   mtx[gety(it)][getx(it)] = Qsize;
-  Qsize++;
   Fixup(Qsize, mtx, comp, gety, getx);
+  Qsize++;
 }
 
 
