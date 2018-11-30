@@ -17,7 +17,7 @@ void heapInit(int size) {
 }
 
 int heapEmpty() {
-  if( queue[0] == NULL) return 1;
+  if( Qsize == 0) return 1;
   else return 0;
 }
 
