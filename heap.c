@@ -40,8 +40,9 @@ Item heapGetMax(short int ** mtx, int (*comp)(Item, Item), short int (*gety)(Ite
   aux = queue[0];
   Qsize--;
   queue[0] = queue[Qsize];
+  mtx[gety(queue[Qsize])][getx(queue[Qsize])] = 0;
   Fixdown(0, mtx, comp, gety, getx);
-  mtx[gety(aux)][gety(aux)] = -1;
+  mtx[gety(aux)][getx(aux)] = -1;
 
 
   return aux;
