@@ -20,7 +20,11 @@ int heapEmpty() {
   else return 0;
 }
 
+
+//heapinit chamado ocm numero arbitrario!!!
 void heapInsert(Item it, short int **mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)) {
+  if(heapEmpty == 1)
+    heapInit(5000);
   queue[Qsize] = it;
   mtx[gety(it)][getx(it)] = Qsize;
   qsize++;
