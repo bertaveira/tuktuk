@@ -37,6 +37,12 @@ void heapInsert(Item it, short int **mtx, int (*comp)(Item, Item), short int (*g
 //mtx fica sempre a -1 (fazer lista de saida simplifica)
 Item heapGetMax(short int ** mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)) {
   Item aux;
+  if(Qsize == 0)
+    return NULL;
+  if(Qsize == 1){
+    Qsize--;
+    return queue[Qsize];
+  }
   aux = queue[0];
   Qsize--;
   queue[0] = queue[Qsize];
