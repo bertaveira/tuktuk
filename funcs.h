@@ -3,7 +3,7 @@
 
 #include "defs.h"
 
-void nullCheck(Item* i);
+void nullCheck(Item i);
 void scanCheck(int a, int b);
 
 #endif

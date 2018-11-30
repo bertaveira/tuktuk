@@ -4,7 +4,7 @@
 
 #include "funcs.h"
 
-void nullCheck(Item* i) {
+void nullCheck(Item i) {
   if ( i == NULL) {
     //printf("erro de alocação\n");
     exit(0);

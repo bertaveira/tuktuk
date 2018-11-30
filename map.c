@@ -178,16 +178,17 @@ list *shortestPath(map *mp, int a) {
   st = heapGetMax(mtx, compNodes, getY, getX);
   aux->item = st;
   aux->next = NULL;
+
   // start searching for the best path
   while (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1]) {
     addNodes(mp, st, mtx);
     st = heapGetMax(mtx, compNodes, getY, getX);
     aux->next = (list *)malloc(sizeof(list));
+    printf("oreo\n");
     aux = aux->next;
     aux->item = st;
     aux->next = NULL;
   }
-
 
   return lt;
 }
