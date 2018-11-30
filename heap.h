@@ -9,6 +9,6 @@ void heapInsert(Item, short int **, int (*)(Item, Item), short int (*)(Item), sh
 Item heapGetMax(short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
 void Fixdown(int, short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
 void Fixup(int, short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
-Item getitem(int);
+Item getItem(int);
 
 #endif
