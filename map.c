@@ -181,9 +181,11 @@ list *shortestPath(map *mp, int a) {
 
   // start searching for the best path
   while (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1]) {
+    printf("bolachas ");
     addNodes(mp, st, mtx);
     st = heapGetMax(mtx, compNodes, getY, getX);
     aux->next = (list *)malloc(sizeof(list));
+    nullCheck(aux->next);
     printf("oreo\n");
     aux = aux->next;
     aux->item = st;
@@ -215,6 +217,8 @@ void addNodes(map *mp, node *org, short int **mtx) {
         cost = org->cost + mp->map[y][x];
         if(new->cost > cost ) {
           new->cost = cost;
+          new->org[0] = org->y;
+          new->org[1] = org->x;
           Fixup( mtx[y][x] , mtx, compNodes, getY, getX);
         }
       }
