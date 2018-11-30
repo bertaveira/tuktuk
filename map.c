@@ -182,13 +182,12 @@ void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
         new->cost = org->cost + mp->map[new->y][new->x];
         heapInsert(new, mtx, compNodes, getY, getX);
       } else if (mtx[y][x] > 0) {
-        new = getItem(mtx[st->org[0]][st->org[1]]);//-----------------------------------------------------------------------------------
+        new = getItem(mtx[st->org[0]][st->org[1]]);
         cost = org->cost + mp->map[org[0]+PF[0][i]][org[1]+PF[1][i]];
         if(new->cost < cost ) {
           new->cost = cost;
           Fixup( mtx[st->org[0]][st->org[1]] , mtx, compNodes, getY, getX);
         }
-
       }
     }
   }
