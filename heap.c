@@ -52,7 +52,7 @@ void Fixdown(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*get
   Item *aux;
   int i = (pos+1)*2;
   short int j = 0, y, x, z, w;
-  if(pos == 0){
+  if(i > Qsize || i-1 > Qsize){
     return;
   }
   if(comp(queue[i],queue[i-1]) >= 0){
