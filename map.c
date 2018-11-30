@@ -129,6 +129,7 @@ void clearList(list *lt) {
       aux->next = trash->next;
       free(trash);
     }
+    printf( "%hd %hd %hd -- %hd %hd\n", ((node *)(aux->item))->y, ((node *)(aux->item))->x, ((node *)(aux->item))->cost, ((node *)(aux->item))->org[0], ((node *)(aux->item))->org[1]);
     aux = (aux->next == NULL)? aux : aux->next;
   }
 }
@@ -141,12 +142,12 @@ void printPoints(list *lt, FILE *fpw, int *count) {
   *count = *count +1; //count number of points
   if (lt->next != NULL) {
     printPoints(lt->next, fpw, count); // recursive call
-    cost = ((node *)(lt->item))->cost- ((node *)(lt->next->item))->cost;
+    cost = ((node *)(lt->item))->cost - ((node *)(lt->next->item))->cost;
   } else {
     fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
     cost = ((node *)(lt->item))->cost;
   }
-  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
+  fprintf(fpw, "%hd %hd %hd -- %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost, ((node *)(lt->item))->org[0], ((node *)(lt->item))->org[1]); //print points
 }
 
 
@@ -173,9 +174,6 @@ list *shortestPath(map *mp, int a) {
   lt = (list *)malloc(sizeof(list));
   lt->item = st;
   lt->next = NULL;
-  heapInsert(st, mtx, compNodes, getY, getX);
-  addNodes(mp, st, mtx);
-  st = heapGetMax(mtx, compNodes, getY, getX);
   // start searching for the best path
   while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
     addNodes(mp, st, mtx);
