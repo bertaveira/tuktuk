@@ -109,8 +109,9 @@ void modeA(map *mp, FILE *fpw){
     clearList(lt);
     printPoints(lt, fpw, &count); // print list of points of best path
   }
+  freeList(lt);
+  freeHeap();
 }
-
 
 void clearList(list *lt) {
   list *aux = lt, *trash;
@@ -127,6 +128,7 @@ void clearList(list *lt) {
     } else {
       trash = aux->next;
       aux->next = trash->next;
+      free(trash->item);
       free(trash);
     }
   }
@@ -182,10 +184,22 @@ list *shortestPath(map *mp, int a) {
     aux->item = st;
     lt = aux;
   }
-
+  //free list of path not found
+  if (st == NULL) {
+    freeList(lt);
+    lt = NULL;
+  }
+  freeMtx(mtx, mp->y);
   return lt;
 }
 
+
+void freeMtx(short int **mtx, int y) {
+  int i;
+  for (i = 0; i<y; i++)
+    free(mtx[i]);
+  free(mtx);
+}
 
 void addNodes(map *mp, node *org, short int **mtx) {
   int i, x, y, cost;
@@ -248,6 +262,17 @@ void freeMap(map *mp){
   }
   free(mp->map);
   free(mp);
+}
+
+
+void freeList(list *lt) {
+  list *aux = lt;
+  while (aux != NULL) {
+    aux = lt->next;
+    free(lt->item);
+    free(lt);
+    lt = aux;
+  }
 }
 
 void printerror(map * mp, FILE *fpw){
