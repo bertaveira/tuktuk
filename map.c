@@ -101,7 +101,7 @@ void modeA(map *mp, FILE *fpw){
   // find best path
   lt = shortestPath(mp, 0);
   //print first line of output file
-  fprintf(fpw, "%hd %hd %c %hd", mp->y, mp->x, mp->mode, mp->nPoints );
+  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
   if( lt == NULL) fprintf(fpw, "-1 0\n");
   else {
@@ -109,7 +109,6 @@ void modeA(map *mp, FILE *fpw){
     clearList(lt);
     printPoints(lt, fpw, &count); // print list of points of best path
   }
-
 }
 
 
@@ -124,13 +123,12 @@ void clearList(list *lt) {
     if (y == ((node *)(aux->next->item))->y && x == ((node *)(aux->next->item))->x && ((node *)(aux->next->item))->org[0] != -1) {
       y = ((node *)(aux->next->item))->org[0];
       x = ((node *)(aux->next->item))->org[1];
+      aux = aux->next;
     } else {
       trash = aux->next;
       aux->next = trash->next;
       free(trash);
     }
-    printf( "%hd %hd %hd -- %hd %hd\n", ((node *)(aux->item))->y, ((node *)(aux->item))->x, ((node *)(aux->item))->cost, ((node *)(aux->item))->org[0], ((node *)(aux->item))->org[1]);
-    aux = (aux->next == NULL)? aux : aux->next;
   }
 }
 
@@ -147,7 +145,7 @@ void printPoints(list *lt, FILE *fpw, int *count) {
     fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
     cost = ((node *)(lt->item))->cost;
   }
-  fprintf(fpw, "%hd %hd %hd -- %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost, ((node *)(lt->item))->org[0], ((node *)(lt->item))->org[1]); //print points
+  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
 }
 
 
