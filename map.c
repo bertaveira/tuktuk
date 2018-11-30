@@ -102,11 +102,13 @@ void modeA(map *mp, FILE *fpw){
 
 
 
-short int **shortestPath(map *mp, int a, int b) {
+list *shortestPath(map *mp, int a, int b) {
   int i, j;
   short int mtx[mp->y][mp->x];
   node *st = (node *)malloc(sizeof(node));
+  list *lt, *aux;
 
+// fazer para coisas com um unico passo--------------------------------------------------------
   for(i = 0; i< mp->y; i++) {
     for(j = 0; j<mp->x; j++) {
       mtx[i][j] = 0;
@@ -117,13 +119,26 @@ short int **shortestPath(map *mp, int a, int b) {
   st->org[1] = -1;
   st->y = mp->points[0][a];
   st->x = mp->points[1][a];
-
   while (st->y != mp->points[0][b] || st->x != mp->points[1][b]) {
     addNodes(mp, st, mtx);
     st = heapGetMax();
   }
 
+  lt = (list *)malloc(sizeof(list));
+  lt->item = st;
+  st = getItem();
+  aux = (list *)malloc(sizeof(list));
+  aux->item = st;
+  lt->next = aux;
+  
+  while(st->org[0] != -1) {
+    st = getItem();//-------------por fazer----------------------------------------
+    aux->next = (list *)malloc(sizeof(list));
+    aux = aux->next;
+    aux->item = st;
+  }
 
+  return lt;
 }
 
 
@@ -144,7 +159,7 @@ void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
         new->cost = org->cost + mp->map[new->y][new->x];
         heapInsert(new);
       } else if (mtx[y][x] > 0) {
-
+        //-----------------------------------------------------------------------------------
       }
     }
   }

@@ -3,4 +3,9 @@
 
 typedef void *Item;
 
+typedef struct _list {
+  Item item;
+  list *next;
+} list;
+
 #endif
