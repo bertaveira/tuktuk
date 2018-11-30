@@ -95,14 +95,36 @@ short int getPOI(map * mp, short int a, short int b) {
 
 
 void modeA(map *mp, FILE *fpw){
+  list *lt;
+  int count = 0;
 
-
+  // find best path
+  lt = shortestPath(mp, 0);
+  //print first line of output file
+  fprintf(fpw, "%hd %hd %c %hd", mp->y, mp->x, mp->mode, mp->nPoints );
+  // found path or not
+  if( lt == 0) fprintf(fpw, "-1 0\n");
+  else {
+    fprintf(fpw, "&hd ", lt->item->cost); // print total cost
+    printPoints(lt, fpw, &count); // print list of points of best path
+  }
 
 }
 
 
 
-list *shortestPath(map *mp, int a, int b) {
+void printPoints(list *lt, Filr *fpw, int *count) {
+
+  *count = *count +1; //count number of points
+  if (lt->next != NULL) printPoints(lt->next, fpw, count); // recursive call
+  else fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+
+  fprintf(fpw, "%hd %hd %hd\n", lt->item->y, lt->item->x, lt->item->cost- lt->next->item->cost); //print points
+}
+
+
+
+list *shortestPath(map *mp, int a) {
   int i, j;
   short int mtx[mp->y][mp->x];
   node *st = (node *)malloc(sizeof(node));
@@ -119,31 +141,32 @@ list *shortestPath(map *mp, int a, int b) {
   st->org[1] = -1;
   st->y = mp->points[0][a];
   st->x = mp->points[1][a];
-  while (st->y != mp->points[0][b] || st->x != mp->points[1][b]) {
+  // start searching for the best path
+  while (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1]) {
     addNodes(mp, st, mtx);
-    st = heapGetMax();
+    st = heapGetMax(mtx, compNodes, getY, getX);
   }
 
+  // build list of best path (backtracing the path found)
   lt = (list *)malloc(sizeof(list));
   lt->item = st;
-  st = getItem();
+  st = getItem( mtx[st->org[0]][st->org[1]]);
   aux = (list *)malloc(sizeof(list));
   aux->item = st;
   lt->next = aux;
-  
   while(st->org[0] != -1) {
-    st = getItem();//-------------por fazer----------------------------------------
+    st = getItem(mtx[st->org[0]][st->org[1]]);
     aux->next = (list *)malloc(sizeof(list));
     aux = aux->next;
     aux->item = st;
+    aux->next = NULL;
   }
-
   return lt;
 }
 
 
 void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
-  int i, x, y;
+  int i, x, y, cost;
   node *new;
 
   for(i = 0; i<8; i++) {
@@ -157,9 +180,15 @@ void addNodes(map *mp, node org, short int mtx[mp->y][mp->x]) {
         new->org[0] = org->y;
         new->org[1] = org->x;
         new->cost = org->cost + mp->map[new->y][new->x];
-        heapInsert(new);
+        heapInsert(new, mtx, compNodes, getY, getX);
       } else if (mtx[y][x] > 0) {
-        //-----------------------------------------------------------------------------------
+        new = getItem(mtx[st->org[0]][st->org[1]]);//-----------------------------------------------------------------------------------
+        cost = org->cost + mp->map[org[0]+PF[0][i]][org[1]+PF[1][i]];
+        if(new->cost < cost ) {
+          new->cost = cost;
+          Fixup( mtx[st->org[0]][st->org[1]] , mtx, compNodes, getY, getX);
+        }
+
       }
     }
   }
