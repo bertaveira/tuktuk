@@ -9,6 +9,7 @@ static Item *queue;
 static int Qsize;
 
 void heapInit(int size) {
+  int i;
   queue = (Item *)malloc(sizeof(Item)*size);
   for (i = 0; i<size; i++)
     queue[i]= NULL;
@@ -23,11 +24,11 @@ int heapEmpty() {
 
 //heapinit chamado ocm numero arbitrario!!!
 void heapInsert(Item it, short int **mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)) {
-  if(heapEmpty == 1)
+  if(heapEmpty() == 1)
     heapInit(5000);
   queue[Qsize] = it;
   mtx[gety(it)][getx(it)] = Qsize;
-  qsize++;
+  Qsize++;
   Fixup(Qsize, mtx, comp, gety, getx);
 }
 
@@ -54,8 +55,8 @@ void Fixdown(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*get
   if(pos == 0){
     return;
   }
-  if(comp(queue[i],queue[i-1) >= 0){
-    if(comp(queue[i],queue[pos) >= 0){
+  if(comp(queue[i],queue[i-1]) >= 0){
+    if(comp(queue[i],queue[pos]) >= 0){
       y = gety(queue[pos]);
       x = getx(queue[pos]);
       z = gety(queue[i]);
@@ -67,10 +68,10 @@ void Fixdown(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*get
       aux = queue[pos];
       queue[pos] = queue[i];
       queue[i] = aux;
-      Fixdown(i, mtx, comp, change);
+      Fixdown(i, mtx, comp, gety, getx);
       return;
     }
-  }else if(comp(queue[i-1],queue[pos) >= 0){
+  }else if(comp(queue[i-1],queue[pos]) >= 0){
     y = gety(queue[pos]);
     x = getx(queue[pos]);
     z = gety(queue[i-1]);
@@ -82,7 +83,7 @@ void Fixdown(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*get
     aux = queue[pos];
     queue[pos] = queue[i-1];
     queue[i-1] = aux;
-    Fixdown(i-1, mtx, comp, change);
+    Fixdown(i-1, mtx, comp, gety, getx);
     return;
   }
   return;
@@ -98,7 +99,7 @@ void Fixup(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*gety)
   if(pos == 0){
     return;
   }
-  if(comp(queue[pos],queue[i) >= 0){
+  if(comp(queue[pos],queue[i]) >= 0){
     y = gety(queue[pos]);
     x = getx(queue[pos]);
     z = gety(queue[i]);
@@ -110,7 +111,7 @@ void Fixup(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*gety)
     aux = queue[pos];
     queue[pos] = queue[i];
     queue[i] = aux;
-    Fixup(i, mtx, comp, change);
+    Fixup(i, mtx, comp, gety, getx);
     return;
   }
   return;
