@@ -180,7 +180,7 @@ list *shortestPath(map *mp, int a) {
   aux->next = NULL;
 
   // start searching for the best path
-  while (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1]) {
+  while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
     printf("bolachas ");
     addNodes(mp, st, mtx);
     st = heapGetMax(mtx, compNodes, getY, getX);
