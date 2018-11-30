@@ -129,7 +129,7 @@ void clearList(list *lt) {
       aux->next = trash->next;
       free(trash);
     }
-    aux = aux->next;
+    aux = (aux->next == NULL)? aux : aux->next;
   }
 }
 
@@ -172,6 +172,10 @@ list *shortestPath(map *mp, int a) {
   // first 2 nodes
   lt = (list *)malloc(sizeof(list));
   lt->item = st;
+  lt->next = NULL;
+  heapInsert(st, mtx, compNodes, getY, getX);
+  addNodes(mp, st, mtx);
+  st = heapGetMax(mtx, compNodes, getY, getX);
   // start searching for the best path
   while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
     addNodes(mp, st, mtx);
