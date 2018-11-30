@@ -55,8 +55,8 @@ void Fixdown(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*get
   if(i > Qsize || i-1 > Qsize){
     return;
   }
-  if(comp(queue[i],queue[i-1]) >= 0){
-    if(comp(queue[i],queue[pos]) >= 0){
+  if(comp(queue[i],queue[i-1]) == 1){
+    if(comp(queue[i],queue[pos]) == 1){
       y = gety(queue[pos]);
       x = getx(queue[pos]);
       z = gety(queue[i]);
@@ -71,7 +71,7 @@ void Fixdown(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*get
       Fixdown(i, mtx, comp, gety, getx);
       return;
     }
-  }else if(comp(queue[i-1],queue[pos]) >= 0){
+  }else if(comp(queue[i-1],queue[pos]) == 1){
     y = gety(queue[pos]);
     x = getx(queue[pos]);
     z = gety(queue[i-1]);
@@ -99,7 +99,7 @@ void Fixup(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*gety)
   if(pos == 0){
     return;
   }
-  if(comp(queue[pos],queue[i]) >= 0){
+  if(comp(queue[pos],queue[i]) == 1){
     y = gety(queue[pos]);
     x = getx(queue[pos]);
     z = gety(queue[i]);
