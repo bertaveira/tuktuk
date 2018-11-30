@@ -111,3 +111,11 @@ void Fixup(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*gety)
   }
   return;
 }
+
+
+Item getitem(int x){
+  if(x<Qsize){
+    return queue[x];
+  }
+  return NULL;
+}
