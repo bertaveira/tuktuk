@@ -138,4 +138,5 @@ void freeHeap() {
     free(queue[i]);
   free(queue);
   queue = NULL;
+  Qsize = 0;
 }
