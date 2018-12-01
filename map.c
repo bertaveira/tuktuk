@@ -99,7 +99,7 @@ void modeA(map *mp, FILE *fpw){
   int count = 0;
 
   // find best path
-  lt = shortestPath(mp, 0);
+  lt = shortestPath(mp, 0, 0);
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
@@ -157,7 +157,7 @@ void printPoints(list *lt, FILE *fpw, int *count) {
 
 
 
-list *shortestPath(map *mp, int a) {
+list *shortestPath(map *mp, int a, int cost) {
   int i, j;
   short int **mtx;
   node *st = (node *)malloc(sizeof(node));
@@ -165,7 +165,7 @@ list *shortestPath(map *mp, int a) {
 
 // fazer para coisas com um unico passo--------------------------------------------------------
   i = checkSimplePaths(mp, a);
-  st->cost = 0;
+  st->cost = cost;
   st->org[0] = -1;
   st->org[1] = -1;
   st->y = mp->points[0][a];
@@ -174,6 +174,11 @@ list *shortestPath(map *mp, int a) {
   lt = (list *)malloc(sizeof(list));
   lt->item = st;
   lt->next = NULL;
+
+  if (inMapCheck(mp, st->x, st->y) == 0) {
+    freeList(lt);
+    return NULL;
+  }
   if ( i == 0 ) {
     return lt;
   } else if (i == 1) {
@@ -276,10 +281,42 @@ void addNodes(map *mp, node *org, short int **mtx) {
 
 
 void modeB(map *mp, FILE *fpw){
+  int i, count = 0;
+  list *lt, *aux;
 
-
+  lt = shortestPath(mp, 0, 0);
+  freeHeap();
+  // find best path
+  for (i = 1; i < mp->nPoints -1; i++) {
+    aux = shortestPath(mp, i, ((node *)(lt->item))->cost);
+    lt = mergeLists(aux, lt);
+    freeHeap();
+  }
+  //print first line of output file
+  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
+  // found path or not
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  else {
+    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
+    clearList(lt);
+    printPoints(lt, fpw, &count); // print list of points of best path
+    fprintf(fpw, "\n");
+  }
+  freeList(lt);
 }
 
+
+list *mergeLists(list *a, list *b) {
+  list *aux = a;
+
+  while ( aux != NULL) {
+    if (aux->next == NULL) {
+      aux->next = b;
+      return a;
+    } else aux = aux->next;
+  }
+  return a;
+}
 
 int compNodes(Item a, Item b) {
   nullCheck(a);
