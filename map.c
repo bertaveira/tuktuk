@@ -4,15 +4,25 @@
 
 #include "map.h"
 #include "funcs.h"
+#include "heap.h"
 
-typedef struct _map {
+const short int PF[2][8] = {{-1,1,2,2,1,-1,-2,-2},{-2,-2,-1,1,2,2,1,-1}};
+
+struct _map {
   short int ** map;
   short int y;
   short int x;
   char mode;
   short int nPoints;
   short int *points[2];
-} map;
+};
+
+struct _node {
+  short int cost;
+  short int org[2];
+  short int y;
+  short int x;
+};
 
 
 map* readMap(FILE * fp) {
@@ -59,61 +69,6 @@ map* readMap(FILE * fp) {
 }
 
 
-/*
-in:
-  mp -- city map
-  x and y -- coordinats of starting position
-out:
-  int: 0 if not posible
-       >0 minimal cost jump
-internal:
-  auxx,auxy -- ints to store new possibel possition
-  min -- cost of the lowst cost possition to date
-  minx, miny -- coordinats of the minimal cost possition to date
-*/
-short int varA (map *mp, short int x, short int y){
-  if(inMapCheck(mp, x, y) == 0){
-    return 0;
-  }
-  short int auxx, auxy, min = -1;
-  auxx = x-2;
-  auxy = y-1;
-  compA(mp, auxx, auxy, &min);
-  auxy = y+1;
-  compA(mp, auxx, auxy, &min);
-  auxx = x+2;
-  compA(mp, auxx, auxy, &min);
-  auxy = y-1;
-  compA(mp, auxx, auxy, &min);
-  auxx = x+1;
-  auxy = y+2;
-  compA(mp, auxx, auxy, &min);
-  auxy = y-2;
-  compA(mp, auxx, auxy, &min);
-  auxx = x-1;
-  compA(mp, auxx, auxy, &min);
-  auxy = y+2;
-  compA(mp, auxx, auxy, &min);
-  if(min != -1)
-    return min;
-  return 0;
-}
-
-
-/*
-in: mp -- map of city
-    newx, newy -- new coordinats to compare
-    minx, miny -- coordinats of minnimal cost
-    min -- cost of minimal cost position to date
-*/
-void compA (map *mp, short int newx, short int newy, short int *min){
-  if (inMapCheck(mp, newx, newy) == 1){
-    if (*min > mp->map[newy][newx] || *min == -1){
-      *min = mp->map[newy][newx];
-    }
-  }
-}
-
 
 /*
 in: mp -- map of city
@@ -136,15 +91,143 @@ short int getPOI(map * mp, short int a, short int b) {
   return mp->points[a][b];
 }
 
-void modeVarA(map *mp, FILE *fpw){
-  short int res = 0, aux = -1;
 
-  if(mp->nPoints == 1)
-    res = varA(mp, getPOI(mp, 1, 0), getPOI(mp, 0, 0));
-  if(res != 0) aux = 1;
-  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, res);
+
+
+void modeA(map *mp, FILE *fpw){
+  list *lt;
+  int count = 0;
+
+  // find best path
+  lt = shortestPath(mp, 0, 0);
+  //print first line of output file
+  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
+  // found path or not
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  else {
+    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
+    clearList(lt);
+    printPoints(lt, fpw, &count); // print list of points of best path
+    fprintf(fpw, "\n");
+  }
+  freeList(lt);
+  freeHeap();
 }
 
+void clearList(list *lt) {
+  list *aux = lt, *trash;
+  int x, y;
+
+  y = ((node *)(lt->item))->org[0];
+  x = ((node *)(lt->item))->org[1];
+
+  while (aux->next != NULL) {
+    if (y == ((node *)(aux->next->item))->y && x == ((node *)(aux->next->item))->x && ((node *)(aux->next->item))->org[0] != -1) {
+      y = ((node *)(aux->next->item))->org[0];
+      x = ((node *)(aux->next->item))->org[1];
+      aux = aux->next;
+    } else {
+      trash = aux->next;
+      aux->next = trash->next;
+      free(trash->item);
+      free(trash);
+    }
+  }
+}
+
+
+
+void printPoints(list *lt, FILE *fpw, int *count) {
+  int cost;
+
+  *count = *count +1; //count number of points
+  if (lt->next != NULL) {
+    printPoints(lt->next, fpw, count); // recursive call
+    cost = ((node *)(lt->item))->cost - ((node *)(lt->next->item))->cost;
+  } else {
+    if (((node *)(lt->item))->org[0] != -1) fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+    if (((node *)(lt->item))->org[0] == -1) {
+      fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
+      return;
+    }
+    cost = ((node *)(lt->item))->cost;
+  }
+  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
+}
+
+
+
+list *shortestPath(map *mp, int a, int cost) {
+  int i, j;
+  short int **mtx;
+  node *st = (node *)malloc(sizeof(node));
+  list *lt, *aux;
+
+// fazer para coisas com um unico passo--------------------------------------------------------
+  i = checkSimplePaths(mp, a);
+  st->cost = cost;
+  st->org[0] = -1;
+  st->org[1] = -1;
+  st->y = mp->points[0][a];
+  st->x = mp->points[1][a];
+  // first 2 nodes
+  lt = (list *)malloc(sizeof(list));
+  lt->item = st;
+  lt->next = NULL;
+
+  if (inMapCheck(mp, st->x, st->y) == 0) {
+    freeList(lt);
+    return NULL;
+  }
+  if ( i == 0 ) {
+    return lt;
+  } else if (i == 1) {
+    aux = (list *)malloc(sizeof(list));
+    nullCheck(aux);
+    aux->next = lt;
+    st = (node *)malloc(sizeof(node));
+    st->cost = mp->map[mp->points[0][a+1]][mp->points[1][a+1]];
+    st->org[0] = mp->points[0][a];
+    st->org[1] = mp->points[1][a];
+    st->y = mp->points[0][a+1];
+    st->x = mp->points[1][a+1];
+    aux->item = st;
+    lt = aux;
+    return lt;
+  }
+  mtx = (short int **)malloc(sizeof(short int *)*mp->y);
+  for(i = 0; i< mp->y; i++) {
+    mtx[i] = (short int *)malloc(sizeof(short int)*mp->x);
+    for(j = 0; j<mp->x; j++) {
+      mtx[i][j] = 0;
+    }
+  }
+  heapInit(mp->x*mp->y);
+  // start searching for the best path
+  while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
+    addNodes(mp, st, mtx);
+    st = heapGetMax(mtx, compNodes, getY, getX);
+    aux = (list *)malloc(sizeof(list));
+    nullCheck(aux);
+    aux->next = lt;
+    aux->item = st;
+    lt = aux;
+  }
+  //free list of path not found
+  if (st == NULL) {
+    freeList(lt);
+    lt = NULL;
+  }
+  freeMtx(mtx, mp->y);
+  return lt;
+}
+
+
+int checkSimplePaths(map *mp , int a) {
+  if (mp->points[0][a] == mp->points[0][a+1] && mp->points[1][a] == mp->points[1][a+1]) return 0;
+  if ( validMove(mp, a+1) == 1) return 1;
+  return -1;
+}
 
 short int validMove(map *mp, short int i) {
   short int x, y;
@@ -160,25 +243,96 @@ short int validMove(map *mp, short int i) {
 }
 
 
-void modeVarB(map *mp, FILE *fpw){
-  short int aux = -1, sum = 0;
+void freeMtx(short int **mtx, int y) {
+  int i;
+  for (i = 0; i<y; i++)
+    free(mtx[i]);
+  free(mtx);
+}
 
-  for(int i = 0; i < mp->nPoints; i++){
-    if( validMove(mp, i) ){
-      if(i>0){
-        sum = sum + mp->map[mp->points[0][i]][mp->points[1][i]];
+void addNodes(map *mp, node *org, short int **mtx) {
+  int i, x, y, cost;
+  node *new;
+
+  for(i = 0; i<8; i++) {
+    x= org->x +PF[1][i];
+    y= org->y +PF[0][i];
+    if( inMapCheck(mp, x, y) ) {
+      if(mtx[y][x] == 0) {
+        new = (node *)malloc(sizeof(node));
+        new->y = y;
+        new->x = x;
+        new->org[0] = org->y;
+        new->org[1] = org->x;
+        new->cost = org->cost + mp->map[y][x];
+        heapInsert(new, mtx, compNodes, getY, getX);
+      } else if (mtx[y][x] > 0) {
+        new = getItem(mtx[y][x]);
+        cost = org->cost + mp->map[y][x];
+        if(new->cost > cost ) {
+          new->cost = cost;
+          new->org[0] = org->y;
+          new->org[1] = org->x;
+          Fixup( mtx[y][x] , mtx, compNodes, getY, getX);
+        }
       }
-    }else{
-      sum = 0;
-      break;
     }
   }
-
-  if(sum != 0) aux = 1;
-  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, aux, sum);
 }
 
 
+void modeB(map *mp, FILE *fpw){
+  int i, count = 0;
+  list *lt, *aux;
+
+  lt = shortestPath(mp, 0, 0);
+  freeHeap();
+  // find best path
+  for (i = 1; i < mp->nPoints -1; i++) {
+    aux = shortestPath(mp, i, ((node *)(lt->item))->cost);
+    lt = mergeLists(aux, lt);
+    freeHeap();
+  }
+  //print first line of output file
+  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
+  // found path or not
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  else {
+    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
+    clearList(lt);
+    printPoints(lt, fpw, &count); // print list of points of best path
+    fprintf(fpw, "\n");
+  }
+  freeList(lt);
+}
+
+
+list *mergeLists(list *a, list *b) {
+  list *aux = a;
+
+  while ( aux != NULL) {
+    if (aux->next == NULL) {
+      aux->next = b;
+      return a;
+    } else aux = aux->next;
+  }
+  return a;
+}
+
+int compNodes(Item a, Item b) {
+  nullCheck(a);
+  nullCheck(b);
+  if( ((node *)a)->cost > ((node *)b)->cost) return 0;
+  else return 1;
+}
+
+short int getX(Item a) {
+  return ((node *)a)->x;
+}
+
+short int getY(Item a) {
+  return ((node *)a)->y;
+}
 
 
 void freeMap(map *mp){
@@ -189,6 +343,17 @@ void freeMap(map *mp){
   }
   free(mp->map);
   free(mp);
+}
+
+
+void freeList(list *lt) {
+  list *aux = lt;
+  while (aux != NULL) {
+    aux = lt->next;
+    free(lt->item);
+    free(lt);
+    lt = aux;
+  }
 }
 
 void printerror(map * mp, FILE *fpw){

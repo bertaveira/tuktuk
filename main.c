@@ -42,17 +42,17 @@ int main(int argc, char **argv) {
   aux = strstr(outfilename, ".cities");
   nullCheck((Item)aux);
   *aux = '\0';
-  strcat(outfilename, ".valid\0");
+  strcat(outfilename, ".walks\0");
   fpw = fopen(outfilename, "w");
 
   while (( mp = readMap(fp)) != NULL) {
     switch (getMode(mp)) {
       case 'A':
-        modeVarA(mp, fpw);
+        modeA(mp, fpw);
         freeMap(mp);
         break;
       case 'B':
-        modeVarB(mp, fpw);
+        modeB(mp, fpw);
         freeMap(mp);
         break;
       default:
