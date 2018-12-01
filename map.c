@@ -103,11 +103,12 @@ void modeA(map *mp, FILE *fpw){
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
     printPoints(lt, fpw, &count); // print list of points of best path
+    fprintf(fpw, "\n");
   }
   freeList(lt);
   freeHeap();
@@ -144,7 +145,11 @@ void printPoints(list *lt, FILE *fpw, int *count) {
     printPoints(lt->next, fpw, count); // recursive call
     cost = ((node *)(lt->item))->cost - ((node *)(lt->next->item))->cost;
   } else {
-    fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+    if (((node *)(lt->item))->org[0] != -1) fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+    if (((node *)(lt->item))->org[0] == -1) {
+      fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
+      return;
+    }
     cost = ((node *)(lt->item))->cost;
   }
   fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
@@ -154,17 +159,12 @@ void printPoints(list *lt, FILE *fpw, int *count) {
 
 list *shortestPath(map *mp, int a) {
   int i, j;
-  short int **mtx = (short int **)malloc(sizeof(short int *)*mp->y);
+  short int **mtx;
   node *st = (node *)malloc(sizeof(node));
   list *lt, *aux;
 
 // fazer para coisas com um unico passo--------------------------------------------------------
-  for(i = 0; i< mp->y; i++) {
-    mtx[i] = (short int *)malloc(sizeof(short int)*mp->x);
-    for(j = 0; j<mp->x; j++) {
-      mtx[i][j] = 0;
-    }
-  }
+  i = checkSimplePaths(mp, a);
   st->cost = 0;
   st->org[0] = -1;
   st->org[1] = -1;
@@ -174,6 +174,29 @@ list *shortestPath(map *mp, int a) {
   lt = (list *)malloc(sizeof(list));
   lt->item = st;
   lt->next = NULL;
+  if ( i == 0 ) {
+    return lt;
+  } else if (i == 1) {
+    aux = (list *)malloc(sizeof(list));
+    nullCheck(aux);
+    aux->next = lt;
+    st = (node *)malloc(sizeof(node));
+    st->cost = mp->map[mp->points[0][a+1]][mp->points[1][a+1]];
+    st->org[0] = mp->points[0][a];
+    st->org[1] = mp->points[1][a];
+    st->y = mp->points[0][a+1];
+    st->x = mp->points[1][a+1];
+    aux->item = st;
+    lt = aux;
+    return lt;
+  }
+  mtx = (short int **)malloc(sizeof(short int *)*mp->y);
+  for(i = 0; i< mp->y; i++) {
+    mtx[i] = (short int *)malloc(sizeof(short int)*mp->x);
+    for(j = 0; j<mp->x; j++) {
+      mtx[i][j] = 0;
+    }
+  }
   // start searching for the best path
   while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
     addNodes(mp, st, mtx);
@@ -191,6 +214,26 @@ list *shortestPath(map *mp, int a) {
   }
   freeMtx(mtx, mp->y);
   return lt;
+}
+
+
+int checkSimplePaths(map *mp , int a) {
+  if (mp->points[0][a] == mp->points[0][a+1] && mp->points[1][a] == mp->points[1][a+1]) return 0;
+  if ( validMove(mp, a+1) == 1) return 1;
+  return -1;
+}
+
+short int validMove(map *mp, short int i) {
+  short int x, y;
+  if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0) {
+    return 0;
+  } else {
+    if (i < 1) return 1;
+    x =  mp->points[1][i] -mp->points[1][i-1];
+    y =  mp->points[0][i] -mp->points[0][i-1];
+    if ( abs(x) + abs(y) == 3 && (x != 0) && (y != 0)) return 1;
+    else return 0;
+  }
 }
 
 

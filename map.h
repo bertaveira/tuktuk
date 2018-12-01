@@ -15,6 +15,8 @@ void modeA(map *mp, FILE *fpw);
 void clearList(list *lt);
 void printPoints(list *lt, FILE *fpw, int *count);
 list *shortestPath(map *mp, int a);
+int checkSimplePaths(map *mp , int a);
+short int validMove(map *mp, short int i);
 void freeMtx(short int **mtx, int y);
 void addNodes(map *mp, node *org, short int **mtx);
 void modeB(map *mp, FILE *fpw);
