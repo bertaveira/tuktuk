@@ -114,6 +114,7 @@ void modeA(map *mp, FILE *fpw){
   freeHeap();
 }
 
+
 void clearList(list *lt) {
   list *aux = lt, *trash;
   int x, y;
@@ -122,7 +123,8 @@ void clearList(list *lt) {
   x = ((node *)(lt->item))->org[1];
 
   while (aux->next != NULL) {
-    if (y == ((node *)(aux->next->item))->y && x == ((node *)(aux->next->item))->x && ((node *)(aux->next->item))->org[0] != -1) {
+    // if both coordinates are the ones we are looking for and it is not the first node
+    if (y == ((node *)(aux->next->item))->y && x == ((node *)(aux->next->item))->x && (((node *)(aux->next->item))->org[0] != ((node *)(aux->next->item))->y || ((node *)(aux->next->item))->org[1] != ((node *)(aux->next->item))->x)) {
       y = ((node *)(aux->next->item))->org[0];
       x = ((node *)(aux->next->item))->org[1];
       aux = aux->next;
@@ -145,8 +147,9 @@ void printPoints(list *lt, FILE *fpw, int *count) {
     printPoints(lt->next, fpw, count); // recursive call
     cost = ((node *)(lt->item))->cost - ((node *)(lt->next->item))->cost;
   } else {
-    if (((node *)(lt->item))->org[0] != -1) fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
-    if (((node *)(lt->item))->org[0] == -1) {
+    if (((node *)(lt->item))->org[0] != ((node *)(lt->item))->y || ((node *)(lt->item))->org[1] != ((node *)(lt->item))->x)
+      fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+    else {
       fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
       return;
     }
@@ -166,10 +169,10 @@ list *shortestPath(map *mp, int a) {
 // fazer para coisas com um unico passo--------------------------------------------------------
   i = checkSimplePaths(mp, a);
   st->cost = 0;
-  st->org[0] = -1;
-  st->org[1] = -1;
   st->y = mp->points[0][a];
   st->x = mp->points[1][a];
+  st->org[0] = st->y;
+  st->org[1] = st->x;
   // first 2 nodes
   lt = (list *)malloc(sizeof(list));
   lt->item = st;
