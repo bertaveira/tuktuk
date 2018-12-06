@@ -55,10 +55,6 @@ int main(int argc, char **argv) {
         modeB(mp, fpw);
         freeMap(mp);
         break;
-      case 'C':
-        modeC(mp, fpw);
-        freeMap(mp);
-        break;
       default:
         printerror(mp, fpw);
     }
