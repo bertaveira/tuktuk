@@ -31,12 +31,15 @@ map* readMap(FILE * fp) {
   //struct that contains the map and all the parameters
   map *mp = (map *)malloc(sizeof(map));
   nullCheck((Item)mp);
+  mp->map = NULL;
   //read first line
   a = fscanf(fp, "%hd %hd %c %hd", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
   if ( a == EOF) {
     free(mp);
     return NULL;
   }
+  scanCheck(a, 4);
+
   if(mp->mode != 'A' && mp->mode != 'B' && mp->mode != 'C'){
     toend(fp);
     return mp;
