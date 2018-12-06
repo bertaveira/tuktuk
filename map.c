@@ -27,6 +27,7 @@ struct _node {
 
 map* readMap(FILE * fp) {
   short int a = 0, i, x, y, j;
+  short int error = 0;
 
   //struct that contains the map and all the parameters
   map *mp = (map *)malloc(sizeof(map));
@@ -37,30 +38,48 @@ map* readMap(FILE * fp) {
     free(mp);
     return NULL;
   }
+  if(mp->mode != 'A' && mp->mode != 'B' && mp->mode != 'C') error = 1;
 
   //alloc space for points
-  mp->points[0] = (short int *)malloc(sizeof(short int)* mp->nPoints);
-  nullCheck((Item)mp->points[0]);
-  mp->points[1] = (short int *)malloc(sizeof(short int)* mp->nPoints);
-  nullCheck((Item)mp->points[1]);
+  if(error == 0){
+    mp->points[0] = (short int *)malloc(sizeof(short int)* mp->nPoints);
+    nullCheck((Item)mp->points[0]);
+    mp->points[1] = (short int *)malloc(sizeof(short int)* mp->nPoints);
+    nullCheck((Item)mp->points[1]);
+  }
 
   //save the points given
   for(i = 0; i < mp->nPoints; i++) {
     a = fscanf(fp, "%hd %hd", &y, &x);
     scanCheck(a, 2);
-    mp->points[0][i] = y;
-    mp->points[1][i] = x;
+    if(error == 0){
+      mp->points[0][i] = y;
+      mp->points[1][i] = x;
+    }
   }
   //map => mp->map[y][x]
-  mp->map = (short int **)malloc(sizeof(short int*)*mp->y);
-  nullCheck((Item)mp->map);
+  if(error == 0){
+    for(i = 0; i<mp->nPoints && error == 0; i++){
+      if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0)
+        error = 1;
+    }
+  }
+  if(error == 0){
+    mp->map = (short int **)malloc(sizeof(short int*)*mp->y);
+    nullCheck((Item)mp->map);
+  }
 
   for(i = 0; i < mp->y; i++) {
-    mp->map[i] = (short int *)malloc(sizeof(short int)*mp->x);
-    nullCheck((Item)mp->map[i]);
+    if(error == 0){
+      mp->map[i] = (short int *)malloc(sizeof(short int)*mp->x);
+      nullCheck((Item)mp->map[i]);
+    }
     //fill matrix with cost
     for(j = 0; j < mp->x; j++){
-      a = fscanf(fp, "%hd", &mp->map[i][j]);
+      a = fscanf(fp, "%hd", &x);
+      if(error == 0){
+        mp->map[i][j] = x;
+      }
       scanCheck(a, 1);
     }
   }
