@@ -13,7 +13,7 @@ char getMode(map * mp);
 short int getPOI(map * mp, short int a, short int b);
 void modeA(map *mp, FILE *fpw);
 void clearList(list *lt);
-void printPoints(list *lt, FILE *fpw, int *count);
+void printPoints(list *lt, FILE *fpw, int *count, map *mp);
 list *shortestPath(map *mp, int a, int cost);
 int checkSimplePaths(map *mp , int a);
 short int validMove(map *mp, short int i);

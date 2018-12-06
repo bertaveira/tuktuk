@@ -117,11 +117,11 @@ void modeA(map *mp, FILE *fpw){
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
-    printPoints(lt, fpw, &count); // print list of points of best path
+    printPoints(lt, fpw, &count, mp); // print list of points of best path
     fprintf(fpw, "\n");
   }
   freeList(lt);
@@ -151,21 +151,20 @@ void clearList(list *lt) {
 
 
 
-void printPoints(list *lt, FILE *fpw, int *count) {
+void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
   int cost;
 
   *count = *count +1; //count number of points
   if (lt->next != NULL) {
-    printPoints(lt->next, fpw, count); // recursive call
-    cost = ((node *)(lt->item))->cost - ((node *)(lt->next->item))->cost;
+    printPoints(lt->next, fpw, count, mp); // recursive call
   } else {
     if (((node *)(lt->item))->org[0] != -1) fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
     if (((node *)(lt->item))->org[0] == -1) {
       fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
       return;
     }
-    cost = ((node *)(lt->item))->cost;
   }
+  cost = mp->map[((node *)(lt->item))->y][((node *)(lt->item))->x];
   fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
 }
 
@@ -216,6 +215,7 @@ list *shortestPath(map *mp, int a, int cost) {
       mtx[i][j] = 0;
     }
   }
+  mtx[st->y][st->x] = -1;
   heapInit(mp->x*mp->y);
   // start searching for the best path
   while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
@@ -310,11 +310,11 @@ void modeB(map *mp, FILE *fpw){
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
-    printPoints(lt, fpw, &count); // print list of points of best path
+    printPoints(lt, fpw, &count, mp); // print list of points of best path
     fprintf(fpw, "\n");
   }
   freeList(lt);
@@ -336,11 +336,11 @@ void modeC(map *mp, FILE *fpw){
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
-    printPoints(lt, fpw, &count); // print list of points of best path
+    printPoints(lt, fpw, &count, mp); // print list of points of best path
     fprintf(fpw, "\n");
   }
   freeList(lt);
@@ -397,7 +397,7 @@ void freeList(list *lt) {
 }
 
 void printerror(map * mp, FILE *fpw){
-  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, -1, 0);
+  fprintf(fpw, "%d %d %c %d %d %d\n", mp->y, mp->x, mp->mode, mp->nPoints, -1, 0);
 }
 
 
