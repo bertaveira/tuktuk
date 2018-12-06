@@ -342,7 +342,7 @@ void modeC(map *mp, FILE *fpw){
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
     printPoints(lt, fpw, &count, mp); // print list of points of best path
-    fprintf(fpw, "\n");
+    fprintf(fpw, "\n\n");
   }
   freeList(lt);
 }
@@ -398,7 +398,7 @@ void freeList(list *lt) {
 }
 
 void printerror(map * mp, FILE *fpw){
-  fprintf(fpw, "%d %d %c %d %d %d\n", mp->y, mp->x, mp->mode, mp->nPoints, -1, 0);
+  fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, -1, 0);
 }
 
 
