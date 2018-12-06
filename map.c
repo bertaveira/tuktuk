@@ -307,6 +307,32 @@ void modeB(map *mp, FILE *fpw){
 }
 
 
+void modeC(map *mp, FILE *fpw){
+  int i, count = 0;
+  list *lt, *aux;
+
+  lt = shortestPath(mp, 0, 0);
+  freeHeap();
+  // find best path
+  for (i = 1; i < mp->nPoints -1; i++) {
+    aux = shortestPath(mp, i, ((node *)(lt->item))->cost);
+    lt = mergeLists(aux, lt);
+    freeHeap();
+  }
+  //print first line of output file
+  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
+  // found path or not
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  else {
+    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
+    clearList(lt);
+    printPoints(lt, fpw, &count); // print list of points of best path
+    fprintf(fpw, "\n");
+  }
+  freeList(lt);
+}
+
+
 list *mergeLists(list *a, list *b) {
   list *aux = a;
 

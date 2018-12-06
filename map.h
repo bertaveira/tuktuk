@@ -20,6 +20,7 @@ short int validMove(map *mp, short int i);
 void freeMtx(short int **mtx, int y);
 void addNodes(map *mp, node *org, short int **mtx);
 void modeB(map *mp, FILE *fpw);
+void modeC(map *mp, FILE *fpw);
 list *mergeLists(list *a, list *b);
 int compNodes(Item a, Item b);
 short int getX(Item a);
