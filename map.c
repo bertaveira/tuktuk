@@ -88,7 +88,7 @@ return: 1 if valid
         0 if unvalid
 */
 short int inMapCheck (map *mp, short int x, short int y){
-  if (x >= 0 && x < mp->x && y >= 0 && y < mp->y && mp->map[y][x] != 0)
+  if (x >= 0 && x < mp->x && y >= 0 && y < mp->y && (mp->map == NULL || mp->map[y][x] != 0))
     return 1;
   return 0;
 }
