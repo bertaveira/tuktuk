@@ -43,6 +43,7 @@ Item heapGetMax(short int ** mtx, int (*comp)(Item, Item), short int (*gety)(Ite
     return NULL;
   if(Qsize == 1){
     Qsize--;
+    mtx[gety(queue[0])][getx(queue[0])] = -2;
     return queue[Qsize];
   }
   aux = queue[0];

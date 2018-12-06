@@ -6,7 +6,7 @@
 
 void nullCheck(Item i) {
   if ( i == NULL) {
-    //printf("erro de alocação\n");
+    printf("erro...null\n");
     exit(0);
   }
 }

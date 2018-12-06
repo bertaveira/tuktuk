@@ -281,8 +281,9 @@ void addNodes(map *mp, node *org, short int **mtx) {
         new->cost = org->cost + mp->map[y][x];
         heapInsert(new, mtx, compNodes, getY, getX);
       } else if (mtx[y][x] > -1) {
-        new = getItem(mtx[y][x]);
+        new = (node *)getItem(mtx[y][x]);
         cost = org->cost + mp->map[y][x];
+        nullCheck(new);
         if(new->cost > cost ) {
           new->cost = cost;
           new->org[0] = org->y;
