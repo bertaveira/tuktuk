@@ -27,7 +27,6 @@ struct _node {
 
 map* readMap(FILE * fp) {
   short int a = 0, i, x, y, j;
-  short int error = 0;
 
   //struct that contains the map and all the parameters
   map *mp = (map *)malloc(sizeof(map));
@@ -38,54 +37,47 @@ map* readMap(FILE * fp) {
     free(mp);
     return NULL;
   }
-  if(mp->mode != 'A' && mp->mode != 'B' && mp->mode != 'C') error = 1;
+  if(mp->mode != 'A' && mp->mode != 'B' && mp->mode != 'C'){
+    toend(fp);
+    return mp;
+  }
 
   //alloc space for points
-  if(error == 0){
-    mp->points[0] = (short int *)malloc(sizeof(short int)* mp->nPoints);
-    nullCheck((Item)mp->points[0]);
-    mp->points[1] = (short int *)malloc(sizeof(short int)* mp->nPoints);
-    nullCheck((Item)mp->points[1]);
-  }
+  mp->points[0] = (short int *)malloc(sizeof(short int)* mp->nPoints);
+  nullCheck((Item)mp->points[0]);
+  mp->points[1] = (short int *)malloc(sizeof(short int)* mp->nPoints);
+  nullCheck((Item)mp->points[1]);
+
 
   //save the points given
   for(i = 0; i < mp->nPoints; i++) {
     a = fscanf(fp, "%hd %hd", &y, &x);
     scanCheck(a, 2);
-    if(error == 0){
-      mp->points[0][i] = y;
-      mp->points[1][i] = x;
-    }
+    mp->points[0][i] = y;
+    mp->points[1][i] = x;
   }
   //map => mp->map[y][x]
-  if(error == 0){
-    for(i = 0; i<mp->nPoints && error == 0; i++){
-      if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0)
-        error = 1;
+  for(i = 0; i<mp->nPoints; i++){
+    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0){
+      toend(fp);
+      return mp;
     }
   }
-  if(error == 0){
-    mp->map = (short int **)malloc(sizeof(short int*)*mp->y);
-    nullCheck((Item)mp->map);
-  }
+  mp->map = (short int **)malloc(sizeof(short int*)*mp->y);
+  nullCheck((Item)mp->map);
 
   for(i = 0; i < mp->y; i++) {
-    if(error == 0){
-      mp->map[i] = (short int *)malloc(sizeof(short int)*mp->x);
-      nullCheck((Item)mp->map[i]);
-    }
+    mp->map[i] = (short int *)malloc(sizeof(short int)*mp->x);
+    nullCheck((Item)mp->map[i]);
     //fill matrix with cost
     for(j = 0; j < mp->x; j++){
-      a = fscanf(fp, "%hd", &x);
-      if(error == 0){
-        mp->map[i][j] = x;
-      }
+      a = fscanf(fp, "%hd", &mp->map[i][j]);
       scanCheck(a, 1);
     }
   }
-
   return mp;
 }
+
 
 
 
@@ -403,4 +395,20 @@ void freeList(list *lt) {
 
 void printerror(map * mp, FILE *fpw){
   fprintf(fpw, "%d %d %c %d %d %d\n\n", mp->y, mp->x, mp->mode, mp->nPoints, -1, 0);
+}
+
+
+
+void toend(FILE *fp){
+  int i = 0,j = 0, aux = 0;
+  while(j == 0){
+    aux = fgetc(fp);
+    if((aux == 10 && i == 0) || aux == EOF){
+      j++;
+    }else if(aux == 10){
+      i = 0;
+    }else{
+      i++;
+    }
+  }
 }

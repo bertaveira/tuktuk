@@ -28,6 +28,7 @@ short int getY(Item a);
 void freeMap(map *mp);
 void printerror(map * mp, FILE *fpw);
 void freeList(list *lt);
+void toend(FILE*);
 
 
 #endif
