@@ -212,10 +212,10 @@ list *shortestPath(map *mp, int a, int cost) {
   for(i = 0; i< mp->y; i++) {
     mtx[i] = (short int *)malloc(sizeof(short int)*mp->x);
     for(j = 0; j<mp->x; j++) {
-      mtx[i][j] = 0;
+      mtx[i][j] = -1;
     }
   }
-  mtx[st->y][st->x] = -1;
+  mtx[st->y][st->x] = -2;
   heapInit(mp->x*mp->y);
   // start searching for the best path
   while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
@@ -272,7 +272,7 @@ void addNodes(map *mp, node *org, short int **mtx) {
     x= org->x +PF[1][i];
     y= org->y +PF[0][i];
     if( inMapCheck(mp, x, y) ) {
-      if(mtx[y][x] == 0) {
+      if(mtx[y][x] == -1) {
         new = (node *)malloc(sizeof(node));
         new->y = y;
         new->x = x;
@@ -280,7 +280,7 @@ void addNodes(map *mp, node *org, short int **mtx) {
         new->org[1] = org->x;
         new->cost = org->cost + mp->map[y][x];
         heapInsert(new, mtx, compNodes, getY, getX);
-      } else if (mtx[y][x] > 0) {
+      } else if (mtx[y][x] > -1) {
         new = getItem(mtx[y][x]);
         cost = org->cost + mp->map[y][x];
         if(new->cost > cost ) {
