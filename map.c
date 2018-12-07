@@ -24,6 +24,7 @@ struct _node {
   short int x;
 };
 
+#define DEBUG 1
 
 
 map* readMap(FILE * fp, int *error) {
@@ -150,7 +151,7 @@ void modeB(map *mp, FILE *fpw){
 void modeC(map *mp, FILE *fpw){
   list ***adj = (list ***)malloc(sizeof(list **)*mp->nPoints);
   list *lt;
-  int i, j, cost = 0;
+  int i, j, cost = 0, count = 0;
   int best[mp->nPoints], vect[mp->nPoints];
 
   for(i=0; i<mp->nPoints; i++) adj[i] = (list **)malloc(sizeof(list *)*mp->nPoints);
@@ -167,40 +168,56 @@ void modeC(map *mp, FILE *fpw){
   vect[0] = 0;
 
   hamAndCheese(1, mp, adj, vect, best, 0, &cost);
-
+  printf("A very nice ham indeed\n");
   if( cost == 0 ) {
     printerror(mp, fpw);
     return;
   }
-
+  printf("melt that cheese\n");
   lt = adj[0][vect[1]];
-  for (i = 1; i<mp->nPoints-1; i++) {
-    lt = mergeLists(adj[vect[i]][vect[i+1]], lt);
+  for (i = 0; i<mp->nPoints-1; i++) {
+    lt = (list *)mergeLists(adj[vect[i]][vect[i+1]], lt);
   }
+  nullCheck(lt);
+  printf("DAMN\n");
   fprintf(fpw, "%hd %hd %c %hd %d", mp->y, mp->x, mp->mode, mp->nPoints, cost);
-  printPoints(lt, fpw, 0, mp);
+  printPoints(lt, fpw, &count, mp);
   fprintf(fpw, "\n");
 
 }
 
 // recursive function to find hamilton paths
 void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost) {
-  int i;
+  int i, j;
 
   if( pos == mp->nPoints) {
-    if (bCost == 0 || cost < *bCost) {
+    if(DEBUG) printf("Encontrou um caminho\n");
+    if (*bCost == 0 || cost < *bCost) {
+      if(DEBUG) printf("O caminho e o melhor ate agora\n");
       for (i= 0; i<mp->nPoints; i++)
         best[i] = vect[i];
       *bCost = cost;
     }
     return;
   }
-
+  if(DEBUG) {
+    printf("Vetor bef -");
+    for (i = 0; i< pos; i++) printf(" %d |", vect[i]);
+    printf("\n");
+  }
   for (i = 1; i< mp->nPoints; i++) {
     if ( newAdj(vect, pos, i) && adj[vect[pos-1]][i] != NULL) {
+      if(DEBUG) printf("Tentar %d (custo %d)\n", i, ((node*)(adj[vect[pos-1]][i]->item))->cost );
       vect[pos] = i;
       hamAndCheese(pos+1, mp, adj, vect, best, cost + ((node *)(adj[vect[pos-1]][i]->item))->cost, bCost);
+      if(DEBUG) {
+        printf("Regrediu\n");
+        printf("Vetor -");
+        for (j = 0; j<= pos; j++) printf(" %d |", vect[j]);
+        printf("\n");
+      }
     }
+    if(DEBUG) printf("%d- nao satifaz if\n", i);
   }
 
   return;
