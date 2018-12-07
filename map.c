@@ -24,7 +24,7 @@ struct _node {
   short int x;
 };
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 map* readMap(FILE * fp, int *error) {
@@ -150,7 +150,7 @@ void modeB(map *mp, FILE *fpw){
 
 void modeC(map *mp, FILE *fpw){
   list ***adj = (list ***)malloc(sizeof(list **)*mp->nPoints);
-  list *lt;
+  list *lt = NULL;
   int i, j, cost = 0, count = 0;
   int best[mp->nPoints], vect[mp->nPoints];
 
@@ -162,7 +162,7 @@ void modeC(map *mp, FILE *fpw){
       adj[i][j] = shortestPath(mp, i, j, 0);
       freeHeap();
       clearList(adj[i][j]);
-      adj[j][i] = adj[i][j];
+      adj[j][i] = NULL;
     }
   }
   vect[0] = 0;
@@ -174,17 +174,22 @@ void modeC(map *mp, FILE *fpw){
     return;
   }
   printf("melt that cheese\n");
-  lt = adj[0][vect[1]];
   for (i = 0; i<mp->nPoints-1; i++) {
+    if (adj[vect[i]][vect[i+1]] == NULL) {
+      adj[vect[i]][vect[i+1]] = reverseList(adj[vect[i+1]][vect[i]], mp, vect[i+1]);
+      adj[vect[i+1]][vect[i]] = NULL;
+    }
     lt = (list *)mergeLists(adj[vect[i]][vect[i+1]], lt);
   }
   nullCheck(lt);
   printf("DAMN\n");
-  fprintf(fpw, "%hd %hd %c %hd %d", mp->y, mp->x, mp->mode, mp->nPoints, cost);
+  fprintf(fpw, "%hd %hd %c %hd %d ", mp->y, mp->x, mp->mode, mp->nPoints, cost);
   printPoints(lt, fpw, &count, mp);
   fprintf(fpw, "\n");
 
 }
+
+
 
 // recursive function to find hamilton paths
 void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost) {
@@ -206,9 +211,13 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
     printf("\n");
   }
   for (i = 1; i< mp->nPoints; i++) {
-    if ( newAdj(vect, pos, i) && adj[vect[pos-1]][i] != NULL) {
+    if ( newAdj(vect, pos, i) && (adj[vect[pos-1]][i] != NULL || adj[i][vect[pos-1]] != NULL)) {
       if(DEBUG) printf("Tentar %d (custo %d)\n", i, ((node*)(adj[vect[pos-1]][i]->item))->cost );
       vect[pos] = i;
+      if (adj[vect[pos-1]][i] == NULL) {
+        adj[vect[pos-1]][i] = reverseList(adj[i][vect[pos-1]], mp, i);
+        adj[i][vect[pos-1]] = NULL;
+      }
       hamAndCheese(pos+1, mp, adj, vect, best, cost + ((node *)(adj[vect[pos-1]][i]->item))->cost, bCost);
       if(DEBUG) {
         printf("Regrediu\n");
@@ -229,6 +238,35 @@ bool newAdj(int vect[], int pos, int i) {
   for (j = 1; j<pos; j++)
     if(vect[j] == i ) return false;
   return true;
+}
+
+
+list *reverseList(list *lt, map *mp, int pos) {
+  if (lt == NULL) return lt;
+  int cost = ((node*)(lt->item))->cost - mp->map[((node*)(lt->item))->y][((node*)(lt->item))->x];
+  list *aux = lt->next, *next, *prev = lt;
+  //delete first point
+  free(prev);
+  prev = aux;
+  if(aux != NULL) {
+    aux = aux->next;
+    prev->next = NULL;
+  }
+  //reverse list
+  while (aux != NULL) {
+    next = aux->next;
+    aux->next = prev;
+    prev = aux;
+    aux = next;
+  }
+  //add last point missing from list
+  aux = (list*)malloc(sizeof(list));
+  aux->item = (node*)malloc(sizeof(node));
+  ((node*)(aux->item))->cost = mp->map[mp->points[0][pos]][mp->points[0][pos]] + cost;
+  ((node*)(aux->item))->y = mp->points[0][pos];
+  ((node*)(aux->item))->x = mp->points[1][pos];
+  aux->next = prev;
+  return aux;
 }
 
 /*
