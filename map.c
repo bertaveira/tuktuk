@@ -25,13 +25,14 @@ struct _node {
 };
 
 
-map* readMap(FILE * fp) {
+map* readMap(FILE * fp, int *error) {
   short int a = 0, i, x, y, j;
 
   //struct that contains the map and all the parameters
   map *mp = (map *)malloc(sizeof(map));
   nullCheck((Item)mp);
   mp->map = NULL;
+  mp->points[0] = NULL;
   //read first line
   a = fscanf(fp, "%hd %hd %c %hd", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
   if ( a == EOF) {
@@ -41,10 +42,14 @@ map* readMap(FILE * fp) {
   scanCheck(a, 4);
 
   if(mp->mode != 'A' && mp->mode != 'B' && mp->mode != 'C'){
-    toend(fp);
+    toend(fp, mp);
     return mp;
   }
-
+  if (mp->nPoints < 2 || (mp->mode == 'A' && mp->nPoints != 2)) {
+    *error = 1;
+    toend(fp, mp);
+    return mp;
+  }
   //alloc space for points
   mp->points[0] = (short int *)malloc(sizeof(short int)* mp->nPoints);
   nullCheck((Item)mp->points[0]);
@@ -58,14 +63,14 @@ map* readMap(FILE * fp) {
     scanCheck(a, 2);
     mp->points[0][i] = y;
     mp->points[1][i] = x;
+    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0)
+      *error = 1;
   }
-  //map => mp->map[y][x]
-  for(i = 0; i<mp->nPoints; i++){
-    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0){
-      toend(fp);
-      return mp;
-    }
+  if (*error == 1) {
+    toend(fp, mp);
+    return mp;
   }
+  
   mp->map = (short int **)malloc(sizeof(short int*)*mp->y);
   nullCheck((Item)mp->map);
 
@@ -78,6 +83,12 @@ map* readMap(FILE * fp) {
       scanCheck(a, 1);
     }
   }
+
+  for(i = 0; i<mp->nPoints; i++){
+    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0)
+      *error = 1;
+  }
+
   return mp;
 }
 
@@ -117,7 +128,7 @@ void modeA(map *mp, FILE *fpw){
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
@@ -245,15 +256,10 @@ int checkSimplePaths(map *mp , int a) {
 
 short int validMove(map *mp, short int i) {
   short int x, y;
-  if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0) {
-    return 0;
-  } else {
-    if (i < 1) return 1;
-    x =  mp->points[1][i] -mp->points[1][i-1];
-    y =  mp->points[0][i] -mp->points[0][i-1];
-    if ( abs(x) + abs(y) == 3 && (x != 0) && (y != 0)) return 1;
-    else return 0;
-  }
+  x =  mp->points[1][i] -mp->points[1][i-1];
+  y =  mp->points[0][i] -mp->points[0][i-1];
+  if ( abs(x) + abs(y) == 3 && (x != 0) && (y != 0)) return 1;
+  else return 0;
 }
 
 
@@ -305,13 +311,14 @@ void modeB(map *mp, FILE *fpw){
   // find best path
   for (i = 1; i < mp->nPoints -1; i++) {
     aux = shortestPath(mp, i, ((node *)(lt->item))->cost);
+    if (aux == NULL) break;
     lt = mergeLists(aux, lt);
     freeHeap();
   }
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n");
+  if( aux == NULL) fprintf(fpw, "-1 0\n\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
@@ -337,12 +344,12 @@ void modeC(map *mp, FILE *fpw){
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
     printPoints(lt, fpw, &count, mp); // print list of points of best path
-    fprintf(fpw, "\n\n");
+    fprintf(fpw, "\n");
   }
   freeList(lt);
 }
@@ -403,16 +410,23 @@ void printerror(map * mp, FILE *fpw){
 
 
 
-void toend(FILE *fp){
-  int i = 0,j = 0, aux = 0;
-  while(j == 0){
-    aux = fgetc(fp);
-    if((aux == 10 && i == 0) || aux == EOF){
-      j++;
-    }else if(aux == 10){
-      i = 0;
-    }else{
-      i++;
-    }
+void toend(FILE *fp, map *mp){
+  int i = 0,j = 0;
+  int *k = malloc(sizeof(int));
+  int *h = malloc(sizeof(int));
+
+  if ( mp->points[0] == NULL) {
+    for (i = 0; i < mp->nPoints; i++)
+      *k = fscanf(fp, "%d %d", k, h);
   }
+  for(i = 0; i < mp->y; i++) {
+    for(j = 0; j < mp->x; j++)
+      *k = fscanf(fp, "%d", k);
+  }
+  trash(k);
+  trash(h);
+}
+
+void trash(int *k) {
+  free(k);
 }

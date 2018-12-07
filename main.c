@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
   map *mp;
   FILE *fp = NULL, *fpw = NULL;
   char *outfilename = NULL, *aux = 0;
+  int error = 0;
 
   if (argc < 2)
     return(0);
@@ -39,13 +40,18 @@ int main(int argc, char **argv) {
   outfilename = (char *) malloc(sizeof(char)*(strlen(argv[1])+1));
   nullCheck((Item) outfilename);
   strcpy(outfilename, argv[1]);
-  aux = strstr(outfilename, ".cities");
+  aux = strrchr(outfilename, '.');
   nullCheck((Item)aux);
   *aux = '\0';
   strcat(outfilename, ".walks\0");
   fpw = fopen(outfilename, "w");
 
-  while (( mp = readMap(fp)) != NULL) {
+  while (( mp = readMap(fp, &error)) != NULL) {
+    if (error == 1) {
+      printerror(mp, fpw);
+      error = 0;
+      continue;
+    }
     switch (getMode(mp)) {
       case 'A':
         modeA(mp, fpw);
@@ -58,6 +64,7 @@ int main(int argc, char **argv) {
       default:
         printerror(mp, fpw);
     }
+    error = 0;
   }
 
   free(outfilename);

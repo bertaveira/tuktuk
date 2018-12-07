@@ -7,7 +7,7 @@ typedef struct _map map;
 typedef struct _node node;
 
 
-map* readMap(FILE * fp);
+map* readMap(FILE * fp, int *error);
 short int inMapCheck (map *mp, short int x, short int y);
 char getMode(map * mp);
 short int getPOI(map * mp, short int a, short int b);
@@ -28,7 +28,8 @@ short int getY(Item a);
 void freeMap(map *mp);
 void printerror(map * mp, FILE *fpw);
 void freeList(list *lt);
-void toend(FILE*);
+void toend(FILE *fp, map *mp);
+void trash(int *k);
 
 
 #endif
