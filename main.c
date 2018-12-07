@@ -64,7 +64,6 @@ int main(int argc, char **argv) {
       default:
         printerror(mp, fpw);
     }
-    error = 0;
   }
 
   free(outfilename);

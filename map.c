@@ -32,7 +32,6 @@ map* readMap(FILE * fp, int *error) {
   map *mp = (map *)malloc(sizeof(map));
   nullCheck((Item)mp);
   mp->map = NULL;
-  mp->points[0] = NULL;
   //read first line
   a = fscanf(fp, "%hd %hd %c %hd", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
   if ( a == EOF) {
@@ -63,6 +62,9 @@ map* readMap(FILE * fp, int *error) {
     scanCheck(a, 2);
     mp->points[0][i] = y;
     mp->points[1][i] = x;
+  }
+  //map => mp->map[y][x]
+  for(i = 0; i<mp->nPoints; i++){
     if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0)
       *error = 1;
   }
@@ -70,7 +72,6 @@ map* readMap(FILE * fp, int *error) {
     toend(fp, mp);
     return mp;
   }
-  
   mp->map = (short int **)malloc(sizeof(short int*)*mp->y);
   nullCheck((Item)mp->map);
 
@@ -83,12 +84,6 @@ map* readMap(FILE * fp, int *error) {
       scanCheck(a, 1);
     }
   }
-
-  for(i = 0; i<mp->nPoints; i++){
-    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0)
-      *error = 1;
-  }
-
   return mp;
 }
 
@@ -311,14 +306,13 @@ void modeB(map *mp, FILE *fpw){
   // find best path
   for (i = 1; i < mp->nPoints -1; i++) {
     aux = shortestPath(mp, i, ((node *)(lt->item))->cost);
-    if (aux == NULL) break;
     lt = mergeLists(aux, lt);
     freeHeap();
   }
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( aux == NULL) fprintf(fpw, "-1 0\n\n");
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
     clearList(lt);
