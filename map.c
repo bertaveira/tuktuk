@@ -25,6 +25,7 @@ struct _node {
 };
 
 
+
 map* readMap(FILE * fp, int *error) {
   short int a = 0, i, x, y, j;
 
@@ -95,6 +96,123 @@ map* readMap(FILE * fp, int *error) {
 
 
 
+void modeA(map *mp, FILE *fpw){
+  list *lt;
+  int count = 0;
+
+  // find best path
+  lt = shortestPath(mp, 0, 1, 0);
+  //print first line of output file
+  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
+  // found path or not
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  else {
+    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
+    clearList(lt);
+    printPoints(lt, fpw, &count, mp); // print list of points of best path
+    fprintf(fpw, "\n");
+  }
+  freeList(lt);
+  freeHeap();
+}
+
+
+void modeB(map *mp, FILE *fpw){
+  int i, count = 0;
+  list *lt = NULL, *aux = NULL;
+
+  lt = shortestPath(mp, 0, 1, 0);
+  freeHeap();
+  clearList(lt);
+  // find best path
+  for (i = 1; i < mp->nPoints -1; i++) {
+    aux = (list *)shortestPath(mp, i, i+1, ((node *)(lt->item))->cost);
+    clearList(aux);
+    lt = (list *)mergeLists(aux, lt);
+    freeHeap();
+    if (lt == NULL) break;
+  }
+  //print first line of output file
+  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
+  // found path or not
+  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  else {
+    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
+    printPoints(lt, fpw, &count, mp); // print list of points of best path
+    fprintf(fpw, "\n");
+  }
+  freeList(lt);
+}
+
+
+
+
+void modeC(map *mp, FILE *fpw){
+  list ***adj = (list ***)malloc(sizeof(list **)*mp->nPoints);
+  list *lt;
+  int i, j, cost = 0;
+  int best[mp->nPoints], vect[mp->nPoints];
+
+  for(i=0; i<mp->nPoints; i++) adj[i] = (list **)malloc(sizeof(list *)*mp->nPoints);
+
+  for( i = 0; i<mp->nPoints; i++) {
+    adj[i][i] = NULL;
+    for (j = i+1; j<mp->nPoints; j++) {
+      adj[i][j] = shortestPath(mp, i, j, 0);
+      freeHeap();
+      clearList(adj[i][j]);
+      adj[j][i] = adj[i][j];
+    }
+  }
+  vect[0] = 0;
+
+  hamAndCheese(1, mp, adj, vect, best, 0, &cost);
+
+  if( cost == 0 ) {
+    printerror(mp, fpw);
+    return;
+  }
+
+  lt = adj[0][vect[1]];
+  for (i = 1; i<mp->nPoints-1; i++) {
+    lt = mergeLists(adj[vect[i]][vect[i+1]], lt);
+  }
+  fprintf(fpw, "%hd %hd %c %hd %d", mp->y, mp->x, mp->mode, mp->nPoints, cost);
+  printPoints(lt, fpw, 0, mp);
+  fprintf(fpw, "\n");
+
+}
+
+// recursive function to find hamilton paths
+void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost) {
+  int i;
+
+  if( pos == mp->nPoints) {
+    if (bCost == 0 || cost < *bCost) {
+      for (i= 0; i<mp->nPoints; i++)
+        best[i] = vect[i];
+      *bCost = cost;
+    }
+    return;
+  }
+
+  for (i = 1; i< mp->nPoints; i++) {
+    if ( newAdj(vect, pos, i) && adj[vect[pos-1]][i] != NULL) {
+      vect[pos] = i;
+      hamAndCheese(pos+1, mp, adj, vect, best, cost + ((node *)(adj[vect[pos-1]][i]->item))->cost, bCost);
+    }
+  }
+
+  return;
+}
+
+
+bool newAdj(int vect[], int pos, int i) {
+  int j;
+  for (j = 1; j<pos; j++)
+    if(vect[j] == i ) return false;
+  return true;
+}
 
 /*
 in: mp -- map of city
@@ -117,28 +235,6 @@ short int getPOI(map * mp, short int a, short int b) {
   return mp->points[a][b];
 }
 
-
-
-
-void modeA(map *mp, FILE *fpw){
-  list *lt;
-  int count = 0;
-
-  // find best path
-  lt = shortestPath(mp, 0, 0);
-  //print first line of output file
-  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
-  // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
-  else {
-    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
-    clearList(lt);
-    printPoints(lt, fpw, &count, mp); // print list of points of best path
-    fprintf(fpw, "\n");
-  }
-  freeList(lt);
-  freeHeap();
-}
 
 void clearList(list *lt) {
   list *aux = lt, *trash;
@@ -184,14 +280,14 @@ void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
 
 
 
-list *shortestPath(map *mp, int a, int cost) {
+list *shortestPath(map *mp, int a, int b, int cost) {
   int i, j;
   short int **mtx;
   node *st = (node *)malloc(sizeof(node));
   list *lt, *aux;
 
 // fazer para coisas com um unico passo--------------------------------------------------------
-  i = checkSimplePaths(mp, a);
+  i = checkSimplePaths(mp, a, b);
   st->cost = cost;
   st->org[0] = -1;
   st->org[1] = -1;
@@ -213,11 +309,11 @@ list *shortestPath(map *mp, int a, int cost) {
     nullCheck(aux);
     aux->next = lt;
     st = (node *)malloc(sizeof(node));
-    st->cost = mp->map[mp->points[0][a+1]][mp->points[1][a+1]];
+    st->cost = mp->map[mp->points[0][b]][mp->points[1][b]];
     st->org[0] = mp->points[0][a];
     st->org[1] = mp->points[1][a];
-    st->y = mp->points[0][a+1];
-    st->x = mp->points[1][a+1];
+    st->y = mp->points[0][b];
+    st->x = mp->points[1][b];
     aux->item = st;
     lt = aux;
     return lt;
@@ -232,7 +328,7 @@ list *shortestPath(map *mp, int a, int cost) {
   mtx[st->y][st->x] = -2;
   heapInit(mp->x*mp->y);
   // start searching for the best path
-  while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
+  while (st != NULL && (st->y != mp->points[0][b] || st->x != mp->points[1][b])) {
     addNodes(mp, st, mtx);
     st = heapGetMax(mtx, compNodes, getY, getX);
     aux = (list *)malloc(sizeof(list));
@@ -251,9 +347,9 @@ list *shortestPath(map *mp, int a, int cost) {
 }
 
 
-int checkSimplePaths(map *mp , int a) {
-  if (mp->points[0][a] == mp->points[0][a+1] && mp->points[1][a] == mp->points[1][a+1]) return 0;
-  if ( validMove(mp, a+1) == 1) return 1;
+int checkSimplePaths(map *mp , int a, int b) {
+  if (mp->points[0][a] == mp->points[0][b] && mp->points[1][a] == mp->points[1][b]) return 0;
+  if ( validMove(mp, b) == 1) return 1;
   return -1;
 }
 
@@ -304,59 +400,6 @@ void addNodes(map *mp, node *org, short int **mtx) {
   }
 }
 
-
-void modeB(map *mp, FILE *fpw){
-  int i, count = 0;
-  list *lt = NULL, *aux = NULL;
-
-  lt = shortestPath(mp, 0, 0);
-  freeHeap();
-  clearList(lt);
-  // find best path
-  for (i = 1; i < mp->nPoints -1; i++) {
-    aux = (list *)shortestPath(mp, i, ((node *)(lt->item))->cost);
-    clearList(aux);
-    lt = (list *)mergeLists(aux, lt);
-    freeHeap();
-    if (lt == NULL) break;
-  }
-  //print first line of output file
-  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
-  // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
-  else {
-    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
-    printPoints(lt, fpw, &count, mp); // print list of points of best path
-    fprintf(fpw, "\n");
-  }
-  freeList(lt);
-}
-
-
-void modeC(map *mp, FILE *fpw){
-  int i, count = 0;
-  list *lt, *aux;
-
-  lt = shortestPath(mp, 0, 0);
-  freeHeap();
-  // find best path
-  for (i = 1; i < mp->nPoints -1; i++) {
-    aux = shortestPath(mp, i, ((node *)(lt->item))->cost);
-    lt = mergeLists(aux, lt);
-    freeHeap();
-  }
-  //print first line of output file
-  fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
-  // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
-  else {
-    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
-    clearList(lt);
-    printPoints(lt, fpw, &count, mp); // print list of points of best path
-    fprintf(fpw, "\n");
-  }
-  freeList(lt);
-}
 
 
 list *mergeLists(list *a, list *b) {

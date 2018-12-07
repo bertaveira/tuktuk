@@ -12,10 +12,11 @@ short int inMapCheck (map *mp, short int x, short int y);
 char getMode(map * mp);
 short int getPOI(map * mp, short int a, short int b);
 void modeA(map *mp, FILE *fpw);
+void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost);
 void clearList(list *lt);
 void printPoints(list *lt, FILE *fpw, int *count, map *mp);
-list *shortestPath(map *mp, int a, int cost);
-int checkSimplePaths(map *mp , int a);
+list *shortestPath(map *mp, int a, int b, int cost);
+int checkSimplePaths(map *mp , int a, int b);
 short int validMove(map *mp, short int i);
 void freeMtx(short int **mtx, int y);
 void addNodes(map *mp, node *org, short int **mtx);
@@ -30,6 +31,7 @@ void printerror(map * mp, FILE *fpw);
 void freeList(list *lt);
 void toend(FILE*, map *);
 void trash(int *k);
+bool newAdj(int vect[], int a, int i);
 
 
 #endif

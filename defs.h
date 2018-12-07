@@ -8,4 +8,6 @@ typedef struct _list {
   struct _list *next;
 } list;
 
+typedef enum { false, true } bool;
+
 #endif
