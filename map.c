@@ -32,6 +32,8 @@ map* readMap(FILE * fp, int *error) {
   map *mp = (map *)malloc(sizeof(map));
   nullCheck((Item)mp);
   mp->map = NULL;
+  mp->points[0] = NULL;
+  mp->points[1] = NULL;
   //read first line
   a = fscanf(fp, "%hd %hd %c %hd", &mp->y, &mp->x, &mp->mode, &mp->nPoints);
   if ( a == EOF) {
@@ -62,11 +64,7 @@ map* readMap(FILE * fp, int *error) {
     scanCheck(a, 2);
     mp->points[0][i] = y;
     mp->points[1][i] = x;
-  }
-  //map => mp->map[y][x]
-  for(i = 0; i<mp->nPoints; i++){
-    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0)
-      *error = 1;
+    if(inMapCheck(mp,x, y) == 0) *error = 1;
   }
   if (*error == 1) {
     toend(fp, mp);
@@ -84,6 +82,14 @@ map* readMap(FILE * fp, int *error) {
       scanCheck(a, 1);
     }
   }
+
+  for(i = 0; i<mp->nPoints; i++){
+    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0) {
+      *error = 1;
+      return mp;
+    }
+  }
+
   return mp;
 }
 
@@ -137,6 +143,8 @@ void modeA(map *mp, FILE *fpw){
 void clearList(list *lt) {
   list *aux = lt, *trash;
   int x, y;
+
+  if (lt == NULL) return;
 
   y = ((node *)(lt->item))->org[0];
   x = ((node *)(lt->item))->org[1];
@@ -299,15 +307,18 @@ void addNodes(map *mp, node *org, short int **mtx) {
 
 void modeB(map *mp, FILE *fpw){
   int i, count = 0;
-  list *lt, *aux;
+  list *lt = NULL, *aux = NULL;
 
   lt = shortestPath(mp, 0, 0);
   freeHeap();
+  clearList(lt);
   // find best path
   for (i = 1; i < mp->nPoints -1; i++) {
-    aux = shortestPath(mp, i, ((node *)(lt->item))->cost);
-    lt = mergeLists(aux, lt);
+    aux = (list *)shortestPath(mp, i, ((node *)(lt->item))->cost);
+    clearList(aux);
+    lt = (list *)mergeLists(aux, lt);
     freeHeap();
+    if (lt == NULL) break;
   }
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
@@ -315,7 +326,6 @@ void modeB(map *mp, FILE *fpw){
   if( lt == NULL) fprintf(fpw, "-1 0\n\n");
   else {
     fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
-    clearList(lt);
     printPoints(lt, fpw, &count, mp); // print list of points of best path
     fprintf(fpw, "\n");
   }
@@ -352,6 +362,10 @@ void modeC(map *mp, FILE *fpw){
 list *mergeLists(list *a, list *b) {
   list *aux = a;
 
+  if (a == NULL) {
+    freeList(b);
+    return a;
+  }
   while ( aux != NULL) {
     if (aux->next == NULL) {
       aux->next = b;
@@ -378,12 +392,14 @@ short int getY(Item a) {
 
 
 void freeMap(map *mp){
-  free(mp->points[0]);
-  free(mp->points[1]);
-  for(int i=0; i<mp->y; i++){
-    free(mp->map[i]);
+  if (mp->points[0] != NULL ) free(mp->points[0]);
+  if (mp->points[1] != NULL ) free(mp->points[1]);
+  if (mp->map != NULL) {
+    for(int i=0; i<mp->y; i++){
+      free(mp->map[i]);
+    }
+    free(mp->map);
   }
-  free(mp->map);
   free(mp);
 }
 
