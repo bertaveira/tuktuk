@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "map.h"
 #include "funcs.h"
@@ -186,7 +187,7 @@ void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
 
 list *shortestPath(map *mp, int a, int cost) {
   int i, j;
-  short int **mtx;
+  bool **mtx;
   node *st = (node *)malloc(sizeof(node));
   list *lt, *aux;
 
@@ -222,19 +223,19 @@ list *shortestPath(map *mp, int a, int cost) {
     lt = aux;
     return lt;
   }
-  mtx = (short int **)malloc(sizeof(short int *)*mp->y);
+  mtx = (bool **)malloc(sizeof(bool *)*mp->y);
   for(i = 0; i< mp->y; i++) {
-    mtx[i] = (short int *)malloc(sizeof(short int)*mp->x);
+    mtx[i] = (bool *)malloc(sizeof(bool)*mp->x);
     for(j = 0; j<mp->x; j++) {
-      mtx[i][j] = -1;
+      mtx[i][j] = 0;
     }
   }
-  mtx[st->y][st->x] = -2;
-  heapInit(mp->x*mp->y);
+  mtx[st->y][st->x] = 1;
+  heapInit((mp->x*mp->y)*7/8);
   // start searching for the best path
   while (st != NULL && (st->y != mp->points[0][a+1] || st->x != mp->points[1][a+1])) {
     addNodes(mp, st, mtx);
-    st = heapGetMax(mtx, compNodes, getY, getX);
+    st = heapGetMax(compNodes, getY, getX);
     aux = (list *)malloc(sizeof(list));
     nullCheck(aux);
     aux->next = lt;
@@ -266,14 +267,14 @@ short int validMove(map *mp, short int i) {
 }
 
 
-void freeMtx(short int **mtx, int y) {
+void freeMtx(bool **mtx, int y) {
   int i;
   for (i = 0; i<y; i++)
     free(mtx[i]);
   free(mtx);
 }
 
-void addNodes(map *mp, node *org, short int **mtx) {
+void addNodes(map *mp, node *org, bool **mtx) {
   int i, x, y, cost;
   node *new;
 
@@ -281,7 +282,7 @@ void addNodes(map *mp, node *org, short int **mtx) {
     x= org->x +PF[1][i];
     y= org->y +PF[0][i];
     if( inMapCheck(mp, x, y) ) {
-      if(mtx[y][x] == -1) {
+      if(mtx[y][x] == 0) {
         new = (node *)malloc(sizeof(node));
         new->y = y;
         new->x = x;
@@ -289,7 +290,7 @@ void addNodes(map *mp, node *org, short int **mtx) {
         new->org[1] = org->x;
         new->cost = org->cost + mp->map[y][x];
         heapInsert(new, mtx, compNodes, getY, getX);
-      } else if (mtx[y][x] > -1) {
+      } else if (mtx[y][x] == 1) {
         new = (node *)getItem(mtx[y][x]);
         cost = org->cost + mp->map[y][x];
         nullCheck(new);
@@ -297,7 +298,7 @@ void addNodes(map *mp, node *org, short int **mtx) {
           new->cost = cost;
           new->org[0] = org->y;
           new->org[1] = org->x;
-          Fixup( mtx[y][x] , mtx, compNodes, getY, getX);
+          Fixup( mtx[y][x], compNodes, getY, getX);
         }
       }
     }

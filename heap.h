@@ -5,10 +5,10 @@
 
 void heapInit(int);
 int heapEmpty();
-void heapInsert(Item, short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
-Item heapGetMax(short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
-void Fixdown(int, short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
-void Fixup(int, short int **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
+void heapInsert(Item, bool **, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
+Item heapGetMax(int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
+void Fixdown(int, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
+void Fixup(int, int (*)(Item, Item), short int (*)(Item), short int (*)(Item));
 Item getItem(int);
 void freeHeap();
 
