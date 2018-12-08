@@ -168,25 +168,28 @@ void modeC(map *mp, FILE *fpw){
   vect[0] = 0;
 
   hamAndCheese(1, mp, adj, vect, best, 0, &cost);
-  printf("A very nice ham indeed\n");
+  if(DEBUG) printf("A very nice ham indeed\n");
   if( cost == 0 ) {
     printerror(mp, fpw);
     return;
   }
-  printf("melt that cheese\n");
+  if(DEBUG) printf("melt that cheese\n");
   for (i = 0; i<mp->nPoints-1; i++) {
     if (adj[vect[i]][vect[i+1]] == NULL) {
       adj[vect[i]][vect[i+1]] = reverseList(adj[vect[i+1]][vect[i]], mp, vect[i+1]);
       adj[vect[i+1]][vect[i]] = NULL;
     }
     lt = (list *)mergeLists(adj[vect[i]][vect[i+1]], lt);
+    adj[vect[i]][vect[i+1]] = NULL;
   }
   nullCheck(lt);
-  printf("DAMN\n");
+  if(DEBUG) printf("DAMN\n");
   fprintf(fpw, "%hd %hd %c %hd %d ", mp->y, mp->x, mp->mode, mp->nPoints, cost);
   printPoints(lt, fpw, &count, mp);
   fprintf(fpw, "\n");
 
+  freeList(lt);
+  freeAdj(adj, mp->nPoints);
 }
 
 
@@ -246,7 +249,8 @@ list *reverseList(list *lt, map *mp, int pos) {
   int cost = ((node*)(lt->item))->cost - mp->map[((node*)(lt->item))->y][((node*)(lt->item))->x];
   list *aux = lt->next, *next, *prev = lt;
   //delete first point
-  free(prev);
+  prev->next = NULL;
+  freeList(prev);
   prev = aux;
   if(aux != NULL) {
     aux = aux->next;
@@ -267,6 +271,19 @@ list *reverseList(list *lt, map *mp, int pos) {
   ((node*)(aux->item))->x = mp->points[1][pos];
   aux->next = prev;
   return aux;
+}
+
+
+void freeAdj(list ***adj, int n) {
+  int i, j;
+
+  for(i = 0; i<n; i++) {
+    for(j = 0; j <n; j++) {
+      if(adj[i][j] != NULL) freeList(adj[i][j]);
+    }
+    free(adj[i]);
+  }
+  free(adj);
 }
 
 /*
