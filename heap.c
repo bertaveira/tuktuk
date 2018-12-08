@@ -9,6 +9,9 @@ static Item *queue;
 static int Qsize;
 static int alocSize;
 
+
+
+//in: size -- size of heap to init
 void heapInit(int size) {
   int i;
   alocSize = size;
@@ -18,110 +21,74 @@ void heapInit(int size) {
   Qsize = 0;
 }
 
+
 int heapEmpty() {
   if( Qsize == 0) return 1;
   else return 0;
 }
 
 
-//heapinit chamado ocm numero arbitrario!!!
-void heapInsert(Item it, short int **mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)) {
-  if(heapEmpty() == 1 && queue == NULL)
-    heapInit(alocSize); // ALTERAR ISTO
+void heapInsert(Item it, int (*comp)(Item, Item)) {
   queue[Qsize] = it;
-  mtx[gety(it)][getx(it)] = Qsize;
-  Fixup(Qsize, mtx, comp, gety, getx);
+  Fixup(Qsize, comp);
   Qsize++;
 }
 
 
 
-//mtx fica sempre a -1 (fazer lista de saida simplifica)
-Item heapGetMax(short int ** mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)) {
+
+Item heapGetMax(int (*comp)(Item, Item)) {
   Item aux;
   if(Qsize == 0)
     return NULL;
   if(Qsize == 1){
     Qsize--;
-    mtx[gety(queue[0])][getx(queue[0])] = -2;
     return queue[Qsize];
   }
   aux = queue[0];
   Qsize--;
   queue[0] = queue[Qsize];
-  mtx[gety(queue[Qsize])][getx(queue[Qsize])] = 0;
-  Fixdown(0, mtx, comp, gety, getx);
-  mtx[gety(aux)][getx(aux)] = -2;
-
-
+  Fixdown(0, comp);
   return aux;
 }
 
 
-void Fixdown(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)){
+void Fixdown(int pos, int (*comp)(Item, Item)){
   Item *aux;
   int i = (pos+1)*2;
-  short int j = 0, y, x, z, w;
   if(i > Qsize || i-1 > Qsize){
     return;
   }
   if(comp(queue[i],queue[i-1]) == 1){
     if(comp(queue[i],queue[pos]) == 1){
-      y = gety(queue[pos]);
-      x = getx(queue[pos]);
-      z = gety(queue[i]);
-      w = getx(queue[i]);
-      j = mtx[y][x];
-      mtx[y][x] = mtx[z][w];
-      mtx[z][w] = j;
-
       aux = queue[pos];
       queue[pos] = queue[i];
       queue[i] = aux;
-      Fixdown(i, mtx, comp, gety, getx);
+      Fixdown(i, comp);
       return;
     }
   }else if(comp(queue[i-1],queue[pos]) == 1){
-    y = gety(queue[pos]);
-    x = getx(queue[pos]);
-    z = gety(queue[i-1]);
-    w = getx(queue[i-1]);
-    j = mtx[y][x];
-    mtx[y][x] = mtx[z][w];
-    mtx[z][w] = j;
-
     aux = queue[pos];
     queue[pos] = queue[i-1];
     queue[i-1] = aux;
-    Fixdown(i-1, mtx, comp, gety, getx);
+    Fixdown(i-1, comp);
     return;
   }
   return;
 }
 
 
-
-
-void Fixup(int pos, short int ** mtx, int (*comp)(Item, Item), short int (*gety)(Item), short int (*getx)(Item)){
+void Fixup(int pos, int (*comp)(Item, Item)){
   Item *aux;
   int i = (pos-1)/2;
-  short int j = 0, y, x, z, w;
   if(pos == 0){
     return;
   }
   if(comp(queue[pos],queue[i]) == 1){
-    y = gety(queue[pos]);
-    x = getx(queue[pos]);
-    z = gety(queue[i]);
-    w = getx(queue[i]);
-    j = mtx[y][x];
-    mtx[y][x] = mtx[z][w];
-    mtx[z][w] = j;
-
     aux = queue[pos];
     queue[pos] = queue[i];
     queue[i] = aux;
-    Fixup(i, mtx, comp, gety, getx);
+    Fixup(i, comp);
     return;
   }
   return;
@@ -135,9 +102,9 @@ Item getItem(int x){
   return NULL;
 }
 
-void freeHeap() {
+void freeHeap(){
   int i;
-  for( i = 0; i<Qsize; i++)
+  for(i = 0; i<Qsize; i++)
     free(queue[i]);
   free(queue);
   queue = NULL;

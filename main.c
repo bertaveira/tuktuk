@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
   *aux = '\0';
   strcat(outfilename, ".walks\0");
   fpw = fopen(outfilename, "w");
+  free(outfilename);
 
   while (( mp = readMap(fp, &error)) != NULL) {
     if (error == 1) {
@@ -72,7 +73,6 @@ int main(int argc, char **argv) {
     }
   }
 
-  free(outfilename);
   fclose(fpw);
   fclose(fp);
   return 0;
