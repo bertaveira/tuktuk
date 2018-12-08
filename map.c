@@ -114,7 +114,6 @@ void modeA(map *mp, FILE *fpw){
     fprintf(fpw, "\n");
   }
   freeList(lt);
-  freeHeap();
 }
 
 
@@ -123,14 +122,12 @@ void modeB(map *mp, FILE *fpw){
   list *lt = NULL, *aux = NULL;
 
   lt = shortestPath(mp, 0, 1, 0);
-  freeHeap();
   clearList(lt);
   // find best path
   for (i = 1; i < mp->nPoints -1; i++) {
     aux = (list *)shortestPath(mp, i, i+1, ((node *)(lt->item))->cost);
     clearList(aux);
     lt = (list *)mergeLists(aux, lt);
-    freeHeap();
     if (lt == NULL) break;
   }
   //print first line of output file
@@ -160,7 +157,6 @@ void modeC(map *mp, FILE *fpw){
     adj[i][i] = NULL;
     for (j = i+1; j<mp->nPoints; j++) {
       adj[i][j] = shortestPath(mp, i, j, 0);
-      freeHeap();
       clearList(adj[i][j]);
       adj[j][i] = adj[i][j];
     }
@@ -354,6 +350,7 @@ list *shortestPath(map *mp, int a, int b, int cost) {
     aux->item = st;
     lt = aux;
   }
+  freeHeap();
   //free list of path not found
   if (st == NULL) {
     freeList(lt);
