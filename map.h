@@ -30,6 +30,8 @@ void freeList(list *lt);
 void toend(FILE*, map *);
 void trash(int *k);
 bool newAdj(int vect[], int a, int i);
+list *reverseList(list *lt, map *mp, int pos);
+void freeAdj(list ***adj, int n);
 
 
 #endif
