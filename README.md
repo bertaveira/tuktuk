@@ -92,7 +92,7 @@ Run the following comand to mae the scritp executable (you only have to do it on
 ```
 chmod 755 autorun
 ```
-The you can execute the script normally
+Then you can execute the script normally
 ```
 ./autorun
 ```
