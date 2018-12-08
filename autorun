@@ -1,0 +1,3 @@
+#!/bin/bash
+# My first script
+for f in testfiles/*.cities ; do ./tuktuk "$f" ; done
