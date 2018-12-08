@@ -9,6 +9,9 @@ static Item *queue;
 static int Qsize;
 static int alocSize;
 
+
+
+//in: size -- size of heap to init
 void heapInit(int size) {
   int i;
   alocSize = size;
@@ -18,16 +21,14 @@ void heapInit(int size) {
   Qsize = 0;
 }
 
+
 int heapEmpty() {
   if( Qsize == 0) return 1;
   else return 0;
 }
 
 
-//heapinit chamado ocm numero arbitrario!!!
 void heapInsert(Item it, int (*comp)(Item, Item)) {
-  if(heapEmpty() == 1 && queue == NULL)
-    heapInit(alocSize); // ALTERAR ISTO
   queue[Qsize] = it;
   Fixup(Qsize, comp);
   Qsize++;
@@ -48,7 +49,6 @@ Item heapGetMax(int (*comp)(Item, Item)) {
   Qsize--;
   queue[0] = queue[Qsize];
   Fixdown(0, comp);
-
   return aux;
 }
 
@@ -61,7 +61,6 @@ void Fixdown(int pos, int (*comp)(Item, Item)){
   }
   if(comp(queue[i],queue[i-1]) == 1){
     if(comp(queue[i],queue[pos]) == 1){
-
       aux = queue[pos];
       queue[pos] = queue[i];
       queue[i] = aux;
@@ -79,8 +78,6 @@ void Fixdown(int pos, int (*comp)(Item, Item)){
 }
 
 
-
-
 void Fixup(int pos, int (*comp)(Item, Item)){
   Item *aux;
   int i = (pos-1)/2;
@@ -88,7 +85,6 @@ void Fixup(int pos, int (*comp)(Item, Item)){
     return;
   }
   if(comp(queue[pos],queue[i]) == 1){
-
     aux = queue[pos];
     queue[pos] = queue[i];
     queue[i] = aux;
@@ -106,9 +102,9 @@ Item getItem(int x){
   return NULL;
 }
 
-void freeHeap() {
+void freeHeap(){
   int i;
-  for( i = 0; i<Qsize; i++)
+  for(i = 0; i<Qsize; i++)
     free(queue[i]);
   free(queue);
   queue = NULL;

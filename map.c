@@ -343,7 +343,7 @@ list *shortestPath(map *mp, int a, int b, int cost) {
     }
   }
   mtx[st->y][st->x] = 1;
-  heapInit(mp->x*mp->y);
+  heapInit((mp->x*mp->y)/2);
   // start searching for the best path
   while (st != NULL && (st->y != mp->points[0][b] || st->x != mp->points[1][b])) {
     addNodes(mp, st, mtx);
