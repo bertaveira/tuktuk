@@ -247,12 +247,12 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
   for (i = 1; i< mp->nPoints; i++) {
     // is it already in vect[]? and is it a possible path?
     if ( newAdj(vect, pos, i) && (adj[vect[pos-1]][i] != NULL || adj[i][vect[pos-1]] != NULL)) {
-      if(DEBUG) printf("Tentar %d (custo %d)\n", i, ((node*)(adj[vect[pos-1]][i]->item))->cost );
       vect[pos] = i;
       if (adj[vect[pos-1]][i] == NULL) { // path needs to be reversed
         adj[vect[pos-1]][i] = reverseList(adj[i][vect[pos-1]], mp, i);
         adj[i][vect[pos-1]] = NULL;
       }
+      if(DEBUG) printf("Tentar %d (custo %d)\n", i, ((node*)(adj[vect[pos-1]][i]->item))->cost );
       // call itself to finde next step (vect[pos+1])
       hamAndCheese(pos+1, mp, adj, vect, best, cost + ((node *)(adj[vect[pos-1]][i]->item))->cost, bCost);
       if(DEBUG) {
@@ -402,7 +402,7 @@ void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
     }
   }
   cost = mp->map[((node *)(lt->item))->y][((node *)(lt->item))->x];
-  fprintf(fpw, "%hd\t%hd\t%hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
+  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
 }
 
 
