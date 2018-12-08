@@ -171,6 +171,7 @@ void modeC(map *mp, FILE *fpw){
   if(DEBUG) printf("A very nice ham indeed\n");
   if( cost == 0 ) {
     printerror(mp, fpw);
+    freeAdj(adj, mp->nPoints);
     return;
   }
   if(DEBUG) printf("melt that cheese\n");
