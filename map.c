@@ -425,10 +425,6 @@ list *shortestPath(map *mp, int a, int b, int cost) {
   lt->item = st;
   lt->next = NULL;
 
-  if (inMapCheck(mp, st->x, st->y) == 0) {
-    freeList(lt);
-    return NULL;
-  }
   if ( i == 0 ) {
     return lt;
   } else if (i == 1) {
