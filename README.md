@@ -81,3 +81,18 @@ After that the rest is the path (coordinates and cost)
 5 10 1
 7 9 2
 ```
+
+## Using the autorun script
+
+This script does the "make" comand and also runs the program for every .cities file in the directory testfiles/
+
+Make sure you have a folder testfiles/ where all your .cities are.
+
+Run the following comand to mae the scritp executable (you only have to do it once):
+```
+chmod 755 autorun
+```
+The you can execute the script normally
+```
+./autorun
+```

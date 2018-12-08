@@ -1,3 +1,4 @@
 #!/bin/bash
 # My first script
+make
 for f in testfiles/*.cities ; do ./tuktuk "$f" ; done
