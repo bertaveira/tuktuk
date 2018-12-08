@@ -313,7 +313,7 @@ list *reverseList(list *lt, map *mp, int pos) {
   //add last point missing from list
   aux = (list*)malloc(sizeof(list));
   aux->item = (node*)malloc(sizeof(node));
-  ((node*)(aux->item))->cost = mp->map[mp->points[0][pos]][mp->points[0][pos]] + cost;
+  ((node*)(aux->item))->cost = mp->map[mp->points[0][pos]][mp->points[1][pos]] + cost;
   ((node*)(aux->item))->y = mp->points[0][pos];
   ((node*)(aux->item))->x = mp->points[1][pos];
   aux->next = prev;
@@ -402,7 +402,7 @@ void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
     }
   }
   cost = mp->map[((node *)(lt->item))->y][((node *)(lt->item))->x];
-  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
+  fprintf(fpw, "%hd\t%hd\t%hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
 }
 
 
