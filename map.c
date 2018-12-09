@@ -124,8 +124,8 @@ void modeB(map *mp, FILE *fpw){
   lt = shortestPath(mp, 0, 1, 0);
   clearList(lt);
   // find best path
-  for (i = 1; i < mp->nPoints -1; i++) {
-    aux = (list *)shortestPath(mp, i, i+1, ((node *)(lt->item))->cost);
+  for (i = 2; i < mp->nPoints; i++) {
+    aux = (list *)shortestPath(mp, i-1, i, ((node *)(lt->item))->cost);
     clearList(aux);
     lt = (list *)mergeLists(aux, lt);
     if (lt == NULL) break;
@@ -396,8 +396,9 @@ void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
   if (lt->next != NULL) {
     printPoints(lt->next, fpw, count, mp); // recursive call
   } else {
-    if (((node *)(lt->item))->org[0] != -1) fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
-    if (((node *)(lt->item))->org[0] == -1) {
+    if (((node *)(lt->item))->org[0] != -1){
+      fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+    }else{
       fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
       return;
     }
