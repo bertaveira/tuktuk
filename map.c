@@ -251,8 +251,8 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
     if ( newAdj(vect, pos, i) && (adj[vect[pos-1]][i] != NULL || adj[i][vect[pos-1]] != NULL)) {
       vect[pos] = i;
       if (adj[vect[pos-1]][i] == NULL) { // path needs to be reversed
-        nextCost = cost + ((node *)(adj[vect[i]][pos-1]->item))->cost - mp->map[mp->points[0][vect[pos-1]]][mp->points[1][vect[pos-1]]] + mp->map[mp->points[0][i]][mp->points[1][i]];
-      } else nextCost = cost + ((node *)(adj[vect[pos-1]][i]->item))->cost;
+        nextCost = cost + ((node *)(adj[i][vect[pos-1]]->item))->cost - mp->map[mp->points[0][vect[pos-1]]][mp->points[1][vect[pos-1]]] + mp->map[mp->points[0][i]][mp->points[1][i]];
+      } else nextCost = cost + ((node *)(adj[i][vect[pos-1]]->item))->cost;
       // call itself to finde next step (vect[pos+1])
       hamAndCheese(pos+1, mp, adj, vect, best, nextCost, bCost);
       if(DEBUG) {
