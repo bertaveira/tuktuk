@@ -245,17 +245,15 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
   }
   // find next vertice to assign to vect[pos]
   for (i = 1; i< mp->nPoints; i++) {
+    if(cost>=*bCost && *bCost != 0) return;
     // is it already in vect[]? and is it a possible path?
-    //if(cost>=*bCost && *bCost != 0) return;
     if ( newAdj(vect, pos, i) && (adj[vect[pos-1]][i] != NULL || adj[i][vect[pos-1]] != NULL)) {
       vect[pos] = i;
       if (adj[vect[pos-1]][i] == NULL) { // path needs to be reversed
-        adj[vect[pos-1]][i] = reverseList(adj[i][vect[pos-1]], mp, i);
-        adj[i][vect[pos-1]] = NULL;
-      }
-      if(DEBUG) printf("Tentar %d (custo %d)\n", i, ((node*)(adj[vect[pos-1]][i]->item))->cost );
+        nextCost = cost + ((node *)(adj[vect[i]][pos-1]->item))->cost - mp->map[mp->points[0][vect[pos-1]]][mp->points[1][vect[pos-1]]] + mp->map[mp->points[0][i]][mp->points[1][i]];
+      } else nextCost = cost + ((node *)(adj[vect[pos-1]][i]->item))->cost;
       // call itself to finde next step (vect[pos+1])
-      hamAndCheese(pos+1, mp, adj, vect, best, cost + ((node *)(adj[vect[pos-1]][i]->item))->cost, bCost);
+      hamAndCheese(pos+1, mp, adj, vect, best, nextCost, bCost);
       if(DEBUG) {
         printf("Regrediu\n");
         printf("Vetor -");
