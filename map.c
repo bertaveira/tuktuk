@@ -119,10 +119,8 @@ void modeA(map *mp, FILE *fpw){
 
 void modeB(map *mp, FILE *fpw){
   int i, count = 0, cost = 0;
-  list **lt = NULL;
+  list *lt[mp->nPoints];
 
-  lt = (list**)malloc(sizeof(list*)*(mp->nPoints-1));
-  nullCheck(lt);
 
   lt[0] = shortestPath(mp, 0, 1, 0);
   clearList(lt[0]);
@@ -158,12 +156,9 @@ void modeB(map *mp, FILE *fpw){
 **/
 void modeC(map *mp, FILE *fpw){
   list ***adj = (list ***)malloc(sizeof(list **)*mp->nPoints); // matrix of paths between two points
-  list **lt = NULL;
+  list *lt[mp->nPoints];
   int i, j, cost = 0, count = 0;
   int best[mp->nPoints], vect[mp->nPoints]; // best path and path being examined
-
-  lt = (list**)malloc(sizeof(list*)*(mp->nPoints-1));
-  nullCheck(lt);
 
   // each list stores the best path between two points (adj[a][b] - path a->b)
   for(i=0; i<mp->nPoints; i++) adj[i] = (list **)malloc(sizeof(list *)*mp->nPoints);
@@ -191,30 +186,23 @@ void modeC(map *mp, FILE *fpw){
   if(DEBUG) printf("melt that cheese\n");
 
   // merge all the lists of paths between points to form the best overall path
-  for (i = 0; i<mp->nPoints-1; i++) {
+  for (i = 0; i<mp->nPoints; i++) {
     // list backwords... need to reverse it
     if (adj[best[i]][best[i+1]] == NULL) {
       lt[i] = reverseList(adj[best[i+1]][best[i]], mp, best[i+1]);
-      adj[best[i+1]][best[i]] = NULL; // prevent future errors by assaining null
+      adj[best[i+1]][best[i]] = NULL;
     }else{
       lt[i] = adj[best[i]][best[i+1]];
       adj[best[i]][best[i+1]] = NULL;
     }
   }
-  nullCheck(lt);
 
-  //remove vertices from the adj matrix to prevent double frees
-  for (i = 1; i<mp->nPoints; i++) {
-    adj[best[i-1]][best[i]] = NULL;
-    adj[best[i]][best[i-1]] = NULL;
-  }
   if(DEBUG) printf("DAMN\n");
   // Print output file
   fprintf(fpw, "%hd %hd %c %hd %d ", mp->y, mp->x, mp->mode, mp->nPoints, cost);
   printPoints(lt, lt[0], fpw, &count, mp, 0);
   fprintf(fpw, "\n");
   // free all
-  for(i = 0; i<mp->nPoints-1; i++) freeList(lt[i]);
   freeAdj(adj, mp->nPoints);
 }
 
@@ -396,21 +384,22 @@ void clearList(list *lt) {
 
 
 
-void printPoints(list **lt,list *lt2, FILE *fpw, int *count, map *mp, int pos) {
+void printPoints(list *lt[], list *lt2, FILE *fpw, int *count, map *mp, int pos) {
   int cost;
 
   *count = *count +1; //count number of points
+  if (lt2 == NULL) return;
   if (lt2->next != NULL) {
     printPoints(lt, lt2->next, fpw, count, mp, pos); // recursive call
-  }else if(pos < mp->nPoints-1){
+  } else if(pos < mp->nPoints-2){
     printPoints(lt, lt[pos+1], fpw, count, mp, pos+1); // recursive call
-  }else {
-    if (((node *)(lt2->item))->org[0] != -1){
+  } else {
+    //if (((node *)(lt2->item))->org[0] != -1){
       fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
-    }else{
+    /*}else{
       fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
       return;
-    }
+    }*/
   }
   cost = mp->map[((node *)(lt2->item))->y][((node *)(lt2->item))->x];
   fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt2->item))->y, ((node *)(lt2->item))->x, cost); //print points
