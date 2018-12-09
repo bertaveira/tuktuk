@@ -41,10 +41,6 @@ Item heapGetMax(int (*comp)(Item, Item)) {
   Item aux;
   if(Qsize == 0)
     return NULL;
-  if(Qsize == 1){
-    Qsize--;
-    return queue[Qsize];
-  }
   aux = queue[0];
   Qsize--;
   queue[0] = queue[Qsize];

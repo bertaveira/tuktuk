@@ -246,6 +246,7 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
   // find next vertice to assign to vect[pos]
   for (i = 1; i< mp->nPoints; i++) {
     // is it already in vect[]? and is it a possible path?
+    //if(cost>=*bCost && *bCost != 0) return;
     if ( newAdj(vect, pos, i) && (adj[vect[pos-1]][i] != NULL || adj[i][vect[pos-1]] != NULL)) {
       vect[pos] = i;
       if (adj[vect[pos-1]][i] == NULL) { // path needs to be reversed
