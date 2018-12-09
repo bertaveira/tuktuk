@@ -315,6 +315,7 @@ list *reverseList(list *lt, map *mp, int pos) {
   ((node*)(aux->item))->cost = mp->map[mp->points[0][pos]][mp->points[1][pos]] + cost;
   ((node*)(aux->item))->y = mp->points[0][pos];
   ((node*)(aux->item))->x = mp->points[1][pos];
+  ((node*)(aux->item))->org[0] = 0;
   aux->next = prev;
   return aux;
 }
@@ -394,12 +395,12 @@ void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
   if (lt->next != NULL) {
     printPoints(lt->next, fpw, count, mp); // recursive call
   } else {
-    if (((node *)(lt->item))->org[0] != -1){
+    //if (((node *)(lt->item))->org[0] != -1){
       fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
-    }else{
+    /*}else{
       fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
       return;
-    }
+    }*/
   }
   cost = mp->map[((node *)(lt->item))->y][((node *)(lt->item))->x];
   fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
