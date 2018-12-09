@@ -181,7 +181,6 @@ void modeC(map *mp, FILE *fpw){
     return;
   }
   if(DEBUG) printf("melt that cheese\n");
-  printf("saiu\n");
 
   // merge all the lists of paths between points to form the best overall path
   for (i = 0; i<mp->nPoints-1; i++) {
