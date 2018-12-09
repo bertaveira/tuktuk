@@ -186,7 +186,7 @@ void modeC(map *mp, FILE *fpw){
   if(DEBUG) printf("melt that cheese\n");
 
   // merge all the lists of paths between points to form the best overall path
-  for (i = 0; i<mp->nPoints; i++) {
+  for (i = 0; i<mp->nPoints-1; i++) {
     // list backwords... need to reverse it
     if (adj[best[i]][best[i+1]] == NULL) {
       lt[i] = reverseList(adj[best[i+1]][best[i]], mp, best[i+1]);
