@@ -313,6 +313,7 @@ list *reverseList(list *lt, map *mp, int pos) {
   ((node*)(aux->item))->cost = mp->map[mp->points[0][pos]][mp->points[1][pos]] + cost;
   ((node*)(aux->item))->y = mp->points[0][pos];
   ((node*)(aux->item))->x = mp->points[1][pos];
+  ((node*)(aux->item))->org[0] = 0;
   aux->next = prev;
   return aux;
 }
