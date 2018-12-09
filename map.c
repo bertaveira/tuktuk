@@ -186,19 +186,19 @@ void modeC(map *mp, FILE *fpw){
   // merge all the lists of paths between points to form the best overall path
   for (i = 0; i<mp->nPoints-1; i++) {
     // list backwords... need to reverse it
-    if (adj[vect[i]][vect[i+1]] == NULL) {
-      adj[vect[i]][vect[i+1]] = reverseList(adj[vect[i+1]][vect[i]], mp, vect[i+1]);
-      adj[vect[i+1]][vect[i]] = NULL; // prevent future errors by assaining null
+    if (adj[best[i]][best[i+1]] == NULL) {
+      adj[best[i]][best[i+1]] = reverseList(adj[best[i+1]][best[i]], mp, best[i+1]);
+      adj[best[i+1]][best[i]] = NULL; // prevent future errors by assaining null
     }
     // transfer list to the mega list
-    lt = (list *)mergeLists(adj[vect[i]][vect[i+1]], lt);
+    lt = (list *)mergeLists(adj[best[i]][best[i+1]], lt);
   }
   nullCheck(lt);
 
   //remove vertices from the adj matrix to prevent double frees
   for (i = 1; i<mp->nPoints; i++) {
-    adj[vect[i-1]][vect[i]] = NULL;
-    adj[vect[i]][vect[i-1]] = NULL;
+    adj[best[i-1]][best[i]] = NULL;
+    adj[best[i]][best[i-1]] = NULL;
   }
   if(DEBUG) printf("DAMN\n");
   // Print output file
