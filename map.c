@@ -203,6 +203,7 @@ void modeC(map *mp, FILE *fpw){
   printPoints(lt, lt[0], fpw, &count, mp, 0);
   fprintf(fpw, "\n");
   // free all
+  for(i = 0; i<mp->nPoints-1; i++) freeList(lt[i]);
   freeAdj(adj, mp->nPoints);
 }
 
