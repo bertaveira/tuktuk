@@ -98,48 +98,53 @@ map* readMap(FILE * fp, int *error) {
 
 
 void modeA(map *mp, FILE *fpw){
-  list *lt;
+  list *lt[1];
   int count = 0;
 
   // find best path
-  lt = shortestPath(mp, 0, 1, 0);
+  lt[0] = shortestPath(mp, 0, 1, 0);
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  if( lt[0] == NULL) fprintf(fpw, "-1 0\n\n");
   else {
-    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
-    clearList(lt);
-    printPoints(lt, fpw, &count, mp); // print list of points of best path
+    fprintf(fpw, "%hd ", ((node *)(lt[0]->item))->cost); // print total cost
+    clearList(lt[0]);
+    printPoints(lt, lt[0], fpw, &count, mp, 0); // print list of points of best path
     fprintf(fpw, "\n");
   }
-  freeList(lt);
+  freeList(lt[0]);
 }
 
 
 void modeB(map *mp, FILE *fpw){
-  int i, count = 0;
-  list *lt = NULL, *aux = NULL;
+  int i, count = 0, cost = 0;
+  list **lt = NULL;
 
-  lt = shortestPath(mp, 0, 1, 0);
-  clearList(lt);
+  lt = (list**)malloc(sizeof(list*)*(mp->nPoints-1));
+  nullCheck(lt);
+
+  lt[0] = shortestPath(mp, 0, 1, 0);
+  clearList(lt[0]);
   // find best path
-  for (i = 2; i < mp->nPoints; i++) {
-    aux = (list *)shortestPath(mp, i-1, i, ((node *)(lt->item))->cost);
-    clearList(aux);
-    lt = (list *)mergeLists(aux, lt);
-    if (lt == NULL) break;
+  for (i = 1; i < mp->nPoints-1; i++) {
+    lt[i] = (list *)shortestPath(mp, i, i+1, 0);
+    clearList(lt[i-1]);
+    if (lt[i] == NULL) break;
   }
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
   if( lt == NULL) fprintf(fpw, "-1 0\n\n");
   else {
-    fprintf(fpw, "%hd ", ((node *)(lt->item))->cost); // print total cost
-    printPoints(lt, fpw, &count, mp); // print list of points of best path
+    for(i = 0; i<mp->nPoints-1; i++){
+      cost = cost + ((node *)(lt[i]->item))->cost;
+    }
+    fprintf(fpw, "%hd ", cost); // print total cost
+    printPoints(lt, lt[0], fpw, &count, mp, 0); // print list of points of best path
     fprintf(fpw, "\n");
   }
-  freeList(lt);
+  for(i = 0; i<mp->nPoints-1; i++) freeList(lt[i]);
 }
 
 
@@ -153,9 +158,12 @@ void modeB(map *mp, FILE *fpw){
 **/
 void modeC(map *mp, FILE *fpw){
   list ***adj = (list ***)malloc(sizeof(list **)*mp->nPoints); // matrix of paths between two points
-  list *lt = NULL;
+  list **lt = NULL;
   int i, j, cost = 0, count = 0;
   int best[mp->nPoints], vect[mp->nPoints]; // best path and path being examined
+
+  lt = (list**)malloc(sizeof(list*)*(mp->nPoints-1));
+  nullCheck(lt);
 
   // each list stores the best path between two points (adj[a][b] - path a->b)
   for(i=0; i<mp->nPoints; i++) adj[i] = (list **)malloc(sizeof(list *)*mp->nPoints);
@@ -186,11 +194,12 @@ void modeC(map *mp, FILE *fpw){
   for (i = 0; i<mp->nPoints-1; i++) {
     // list backwords... need to reverse it
     if (adj[best[i]][best[i+1]] == NULL) {
-      adj[best[i]][best[i+1]] = reverseList(adj[best[i+1]][best[i]], mp, best[i+1]);
+      lt[i] = reverseList(adj[best[i+1]][best[i]], mp, best[i+1]);
       adj[best[i+1]][best[i]] = NULL; // prevent future errors by assaining null
+    }else{
+      lt[i] = adj[best[i]][best[i+1]];
+      adj[best[i]][best[i+1]] = NULL;
     }
-    // transfer list to the mega list
-    lt = (list *)mergeLists(adj[best[i]][best[i+1]], lt);
   }
   nullCheck(lt);
 
@@ -202,10 +211,10 @@ void modeC(map *mp, FILE *fpw){
   if(DEBUG) printf("DAMN\n");
   // Print output file
   fprintf(fpw, "%hd %hd %c %hd %d ", mp->y, mp->x, mp->mode, mp->nPoints, cost);
-  printPoints(lt, fpw, &count, mp);
+  printPoints(lt, lt[0], fpw, &count, mp, 0);
   fprintf(fpw, "\n");
   // free all
-  freeList(lt);
+  for(i = 0; i<mp->nPoints-1; i++) freeList(lt[i]);
   freeAdj(adj, mp->nPoints);
 }
 
@@ -387,22 +396,24 @@ void clearList(list *lt) {
 
 
 
-void printPoints(list *lt, FILE *fpw, int *count, map *mp) {
+void printPoints(list **lt,list *lt2, FILE *fpw, int *count, map *mp, int pos) {
   int cost;
 
   *count = *count +1; //count number of points
-  if (lt->next != NULL) {
-    printPoints(lt->next, fpw, count, mp); // recursive call
-  } else {
-    if (((node *)(lt->item))->org[0] != -1){
+  if (lt2->next != NULL) {
+    printPoints(lt, lt2->next, fpw, count, mp, pos); // recursive call
+  }else if(pos < mp->nPoints-1){
+    printPoints(lt, lt[pos+1], fpw, count, mp, pos+1); // recursive call
+  }else {
+    if (((node *)(lt2->item))->org[0] != -1){
       fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
     }else{
       fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
       return;
     }
   }
-  cost = mp->map[((node *)(lt->item))->y][((node *)(lt->item))->x];
-  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt->item))->y, ((node *)(lt->item))->x, cost); //print points
+  cost = mp->map[((node *)(lt2->item))->y][((node *)(lt2->item))->x];
+  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt2->item))->y, ((node *)(lt2->item))->x, cost); //print points
 }
 
 
