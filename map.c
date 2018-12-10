@@ -24,7 +24,7 @@ struct _node {
   short int x;
 };
 
-#define DEBUG 0
+//#define DEBUG 0
 
 
 map* readMap(FILE * fp, int *error) {
@@ -244,7 +244,7 @@ void modeC(map *mp, char *outname){
 *
 **/
 void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost) {
-  int i, j, nextCost= 0;
+  int i, nextCost= 0;
 
   // found a possible path
   if( pos == mp->nPoints) {
@@ -263,6 +263,7 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
     return;
   }
 #ifdef DEBUG
+    int j;
     printf("Vetor bef -");
     for (i = 0; i< pos; i++) printf(" %d |", vect[i]);
     printf("\n");
