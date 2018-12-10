@@ -24,7 +24,7 @@ struct _node {
   short int x;
 };
 
-#define DEBUG 0
+//#define DEBUG 0
 
 
 map* readMap(FILE * fp, int *error) {
@@ -176,23 +176,16 @@ void modeC(map *mp, char *outname){
   for( i = 0; i<mp->nPoints; i++) {
     adj[i][i] = NULL;
     for (j = i+1; j<mp->nPoints; j++) {
-      adj[i][j] = shortestPath(mp, i, j, 0); // get best path between points i and j (from mp->points[][x])
-      clearList(adj[i][j]); // remove from list the points no in best path
+      if (!(error)) {
+        adj[i][j] = shortestPath(mp, i, j, 0); // get best path between points i and j (from mp->points[][x])
+        clearList(adj[i][j]); // remove from list the points no in best path
+      } else adj[i][j] = NULL;
       // backwords path set to NULL (later if needed we can reverse the list)
       adj[j][i] = NULL;
+      if (!(error) && adj[i][j] == NULL) error = true;
     }
   }
-  // check if at least every point has a path to any other
-  for( i = 0; i<mp->nPoints; i++) {
-    error = true;
-    for (j = 0; j<mp->nPoints; j++) {
-      if (adj[i][j] != NULL || adj[j][i] != NULL) {
-        error = false;
-      }
-    }
-    if (error) break;
-  }
-
+  printf("saiu\n");
   //start point is 0
   vect[0] = 0; // each number "x" coresponds to the point (mp->points[1][x], mp->points[0][x])
   // call recursive function to find best hamilton path between the points of interest
@@ -244,7 +237,7 @@ void modeC(map *mp, char *outname){
 *
 **/
 void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost) {
-  int i, j, nextCost= 0;
+  int i, nextCost= 0;
 
   // found a possible path
   if( pos == mp->nPoints) {
@@ -280,6 +273,7 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
       // call itself to finde next step (vect[pos+1])
       hamAndCheese(pos+1, mp, adj, vect, best, nextCost, bCost);
 #ifdef DEBUG
+        int j;
         printf("Regrediu\n");
         printf("Vetor -");
         for (j = 0; j<= pos; j++) printf(" %d |", vect[j]);
