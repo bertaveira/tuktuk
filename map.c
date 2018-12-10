@@ -66,7 +66,7 @@ map* readMap(FILE * fp, int *error) {
     scanCheck(a, 2);
     mp->points[0][i] = y;
     mp->points[1][i] = x;
-    if(inMapCheck(mp,x, y) == 0 || movePossible(x, y, mp) == false) *error = 1;
+    if(inMapCheck(mp,x, y) == 0) *error = 1;
   }
   if (*error == 1) {
     toend(fp, mp);
@@ -86,7 +86,7 @@ map* readMap(FILE * fp, int *error) {
   }
 
   for(i = 0; i<mp->nPoints; i++){
-    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0) {
+    if(inMapCheck(mp, mp->points[1][i], mp->points[0][i]) == 0 || movePossible(x, y, mp) == false) {
       *error = 1;
       return mp;
     }
