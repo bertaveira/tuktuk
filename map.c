@@ -395,12 +395,12 @@ void printPoints(list *lt[], list *lt2, FILE *fpw, int *count, map *mp, int pos)
   } else if(pos < mp->nPoints-2){
     printPoints(lt, lt[pos+1], fpw, count, mp, pos+1); // recursive call
   } else {
-    //if (((node *)(lt2->item))->org[0] != -1){
+    if (((node *)(lt2->item))->org[0] != -1){
       fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
-    /*}else{
+    }else{
       fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
       return;
-    }*/
+    }
   }
   cost = mp->map[((node *)(lt2->item))->y][((node *)(lt2->item))->x];
   fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt2->item))->y, ((node *)(lt2->item))->x, cost); //print points
