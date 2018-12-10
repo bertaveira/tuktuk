@@ -44,36 +44,38 @@ int main(int argc, char **argv) {
   nullCheck((Item)aux);
   *aux = '\0';
   strcat(outfilename, ".walks\0");
-  fpw = fopen(outfilename, "w");
-  free(outfilename);
 
   while (( mp = readMap(fp, &error)) != NULL) {
     if (error == 1) {
+      fpw = fopen(outfilename, "a");
       printerror(mp, fpw);
+      fclose(fpw);
       error = 0;
       freeMap(mp);
       continue;
     }
     switch (getMode(mp)) {
       case 'A':
-        modeA(mp, fpw);
+        modeA(mp, outfilename);
         freeMap(mp);
         break;
       case 'B':
-        modeB(mp, fpw);
+        modeB(mp, outfilename);
         freeMap(mp);
         break;
       case 'C':
-        modeC(mp, fpw);
+        modeC(mp, outfilename);
         freeMap(mp);
         break;
       default:
+        fpw = fopen(outfilename, "a");
         printerror(mp, fpw);
+        fclose(fpw);
         freeMap(mp);
     }
   }
 
-  fclose(fpw);
+  free(outfilename);
   fclose(fp);
   return 0;
 }
