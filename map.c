@@ -197,7 +197,6 @@ void modeC(map *mp, char *outname){
   vect[0] = 0; // each number "x" coresponds to the point (mp->points[1][x], mp->points[0][x])
   // call recursive function to find best hamilton path between the points of interest
   if (!(error)) hamAndCheese(1, mp, adj, vect, best, 0, &cost);
-  if(DEBUG) printf("A very nice ham indeed\n");
 
   fpw = fopen(outname, "a");
   // no possible path
@@ -207,7 +206,6 @@ void modeC(map *mp, char *outname){
     fclose(fpw);
     return;
   }
-  if(DEBUG) printf("melt that cheese\n");
 
   // merge all the lists of paths between points to form the best overall path
   for (i = 0; i<mp->nPoints-1; i++) {
@@ -221,7 +219,6 @@ void modeC(map *mp, char *outname){
     }
   }
 
-  if(DEBUG) printf("DAMN\n");
   // Print output file
   fprintf(fpw, "%hd %hd %c %hd %d ", mp->y, mp->x, mp->mode, mp->nPoints, cost);
   printPoints(lt, lt[mp->nPoints-2], fpw, &count, mp, mp->nPoints-2);
@@ -251,21 +248,26 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
 
   // found a possible path
   if( pos == mp->nPoints) {
-    if(DEBUG) printf("Encontrou um caminho\n");
+#ifdef DEBUG
+    printf("Encontrou um caminho\n");
+#endif
     // compare the cost with prevous path to find the best
     if (*bCost == 0 || cost < *bCost) {
-      if(DEBUG) printf("O caminho e o melhor ate agora\n");
+#ifdef DEBUG
+      printf("O caminho e o melhor ate agora\n");
+#endif
       for (i= 0; i<mp->nPoints; i++)
         best[i] = vect[i];
       *bCost = cost;
     }
     return;
   }
-  if(DEBUG) {
+#ifdef DEBUG
     printf("Vetor bef -");
     for (i = 0; i< pos; i++) printf(" %d |", vect[i]);
     printf("\n");
-  }
+#endif
+
   // find next vertice to assign to vect[pos]
   for (i = 1; i< mp->nPoints; i++) {
     if(cost>=*bCost && *bCost != 0) return;
@@ -277,14 +279,16 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
       } else nextCost = cost + ((node *)(adj[vect[pos-1]][i]->item))->cost;
       // call itself to finde next step (vect[pos+1])
       hamAndCheese(pos+1, mp, adj, vect, best, nextCost, bCost);
-      if(DEBUG) {
+#ifdef DEBUG
         printf("Regrediu\n");
         printf("Vetor -");
         for (j = 0; j<= pos; j++) printf(" %d |", vect[j]);
         printf("\n");
-      }
+#endif
     }
-    if(DEBUG) printf("%d- nao satifaz if\n", i);
+#ifdef DEBUG
+    printf("%d- nao satifaz if\n", i);
+#endif
   }
   return;
 }
