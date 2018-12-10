@@ -185,7 +185,7 @@ void modeC(map *mp, char *outname){
       if (!(error) && adj[i][j] == NULL) error = true;
     }
   }
-  printf("saiu\n");
+
   //start point is 0
   vect[0] = 0; // each number "x" coresponds to the point (mp->points[1][x], mp->points[0][x])
   // call recursive function to find best hamilton path between the points of interest
