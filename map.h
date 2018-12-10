@@ -18,6 +18,7 @@ void printPoints(list **lt,list *lt2, FILE *fpw, int *count, map *mp, int);
 list *shortestPath(map *mp, int a, int b, int cost);
 int checkSimplePaths(map *mp , int a, int b);
 short int validMove(map *mp, short int i);
+bool movePossible(int ax, int ay, map *mp);
 void freeMtx(bool **mtx, int y);
 void addNodes(map *mp, node *org, bool**mtx);
 void modeB(map *mp, char *outname);

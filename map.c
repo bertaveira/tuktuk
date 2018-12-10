@@ -66,7 +66,7 @@ map* readMap(FILE * fp, int *error) {
     scanCheck(a, 2);
     mp->points[0][i] = y;
     mp->points[1][i] = x;
-    if(inMapCheck(mp,x, y) == 0) *error = 1;
+    if(inMapCheck(mp,x, y) == 0 || movePossible(x, y, mp) == false) *error = 1;
   }
   if (*error == 1) {
     toend(fp, mp);
@@ -169,6 +169,7 @@ void modeC(map *mp, char *outname){
   int i, j, cost = 0, count = 0;
   int best[mp->nPoints], vect[mp->nPoints]; // best path and path being examined
   FILE *fpw = NULL;
+  bool error = false;
 
   // each list stores the best path between two points (adj[a][b] - path a->b)
   for(i=0; i<mp->nPoints; i++) adj[i] = (list **)malloc(sizeof(list *)*mp->nPoints);
@@ -181,17 +182,29 @@ void modeC(map *mp, char *outname){
       adj[j][i] = NULL;
     }
   }
+  // check if at least every point has a path to any other
+  for( i = 0; i<mp->nPoints; i++) {
+    error = true;
+    for (j = 0; j<mp->nPoints; j++) {
+      if (adj[i][j] != NULL || adj[j][i] != NULL) {
+        error = false;
+      }
+    }
+    if (error) break;
+  }
+
   //start point is 0
   vect[0] = 0; // each number "x" coresponds to the point (mp->points[1][x], mp->points[0][x])
   // call recursive function to find best hamilton path between the points of interest
-  hamAndCheese(1, mp, adj, vect, best, 0, &cost);
+  if (!(error)) hamAndCheese(1, mp, adj, vect, best, 0, &cost);
   if(DEBUG) printf("A very nice ham indeed\n");
 
   fpw = fopen(outname, "a");
   // no possible path
-  if( cost == 0 ) {
+  if( cost == 0 || error) {
     printerror(mp, fpw);
     freeAdj(adj, mp->nPoints);
+    fclose(fpw);
     return;
   }
   if(DEBUG) printf("melt that cheese\n");
@@ -401,22 +414,22 @@ void clearList(list *lt) {
 void printPoints(list *lt[], list *lt2, FILE *fpw, int *count, map *mp, int pos) {
   int cost;
 
-  *count = *count +1; //count number of points
   if (lt2 == NULL) return;
+  if (((node *)(lt2->item))->org[0] != -1) *count = *count +1; //count number of points
   if (lt2->next != NULL) {
     printPoints(lt, lt2->next, fpw, count, mp, pos); // recursive call
   } else if(pos > 0){
     printPoints(lt, lt[pos-1], fpw, count, mp, pos-1); // recursive call
   } else {
-    if (((node *)(lt2->item))->org[0] != -1){
-      fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
-    }else{
-      fprintf(fpw, "0\n"); // print number of points ate the end of the recurssion
+    if (((node *)(lt2->item))->org[0] == -1 && *count == 1) {
+      fprintf(fpw, "0\n"); // print number zero if it is a simple path (same start and end point)
       return;
+    } else {
+      fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
     }
   }
   cost = mp->map[((node *)(lt2->item))->y][((node *)(lt2->item))->x];
-  fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt2->item))->y, ((node *)(lt2->item))->x, cost); //print points
+  if (((node *)(lt2->item))->org[0] != -1) fprintf(fpw, "%hd %hd %hd\n", ((node *)(lt2->item))->y, ((node *)(lt2->item))->x, cost); //print points
 }
 
 
@@ -497,6 +510,20 @@ short int validMove(map *mp, short int i) {
   y =  mp->points[0][i] -mp->points[0][i-1];
   if ( abs(x) + abs(y) == 3 && (x != 0) && (y != 0)) return 1;
   else return 0;
+}
+
+
+bool movePossible(int ax, int ay, map *mp) {
+  int i, x, y;
+
+  for (i = 0; i< 8; i++) {
+    x= ax +PF[1][i];
+    y= ay +PF[0][i];
+    if( inMapCheck(mp, x, y) ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 
