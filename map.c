@@ -118,26 +118,25 @@ void modeA(map *mp, FILE *fpw){
 
 
 void modeB(map *mp, FILE *fpw){
-  int i, count = 0, cost = 0;
-  list *lt[mp->nPoints];
-
+  int i= 0, count = 0, cost = 0;
+  list *lt[mp->nPoints-1];
 
   lt[0] = shortestPath(mp, 0, 1, 0);
   clearList(lt[0]);
   // find best path
-  for (i = 1; i < mp->nPoints-1; i++) {
-    lt[i] = (list *)shortestPath(mp, i, i+1, 0);
-    clearList(lt[i-1]);
-    if (lt[i] == NULL) break;
-  }
+  if (lt[0] != NULL)
+    for (i = 1; i < mp->nPoints-1; i++) {
+      lt[i] = (list *)shortestPath(mp, i, i+1, 0);
+      clearList(lt[i]);
+      if (lt[i] == NULL) break;
+    }
   //print first line of output file
   fprintf(fpw, "%hd %hd %c %hd ", mp->y, mp->x, mp->mode, mp->nPoints );
   // found path or not
-  if( lt == NULL) fprintf(fpw, "-1 0\n\n");
+  if( lt[i] == NULL) fprintf(fpw, "-1 0\n\n");
   else {
-    for(i = 0; i<mp->nPoints-1; i++){
+    for(i = 0; i<mp->nPoints-1; i++)
       cost = cost + ((node *)(lt[i]->item))->cost;
-    }
     fprintf(fpw, "%hd ", cost); // print total cost
     printPoints(lt, lt[0], fpw, &count, mp, 0); // print list of points of best path
     fprintf(fpw, "\n");
@@ -156,7 +155,7 @@ void modeB(map *mp, FILE *fpw){
 **/
 void modeC(map *mp, FILE *fpw){
   list ***adj = (list ***)malloc(sizeof(list **)*mp->nPoints); // matrix of paths between two points
-  list *lt[mp->nPoints];
+  list *lt[mp->nPoints-1];
   int i, j, cost = 0, count = 0;
   int best[mp->nPoints], vect[mp->nPoints]; // best path and path being examined
 

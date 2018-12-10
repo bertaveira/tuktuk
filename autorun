@@ -1,4 +1,11 @@
 #!/bin/bash
 # My first script
+rm -r nossos
+rm -r prof
+mkdir nossos
+mkdir prof
+mv testfiles/*.walks prof
 make
 for f in testfiles/*.cities ; do ./tuktuk "$f" ; done
+mv testfiles/*.walks nossos
+diff -r nossos prof
