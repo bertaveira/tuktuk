@@ -5,6 +5,7 @@
 
 typedef struct _map map;
 typedef struct _node node;
+typedef struct _path path;
 
 
 map* readMap(FILE * fp, int *error);
@@ -12,7 +13,12 @@ short int inMapCheck (map *mp, short int x, short int y);
 char getMode(map * mp);
 short int getPOI(map * mp, short int a, short int b);
 void modeA(map *mp, char *outname);
-void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost);
+void hamPath(int pos, map *mp, path *pt[], int vect[], int best[], int cost, int *bCost);
+path *shortestPathC(map *mp, int a);
+void addNodesC(map *mp, node *org, path *pt, int a);
+void printPointsC(path *pt[], int vect[], int y, int x, FILE *fpw, int *count, map *mp, int pos) ;
+bool foundAllPoints(map *mp, int a, path *pt);
+void freePath(path *pt, map *mp);
 void clearList(list *lt);
 void printPoints(list **lt,list *lt2, FILE *fpw, int *count, map *mp, int);
 list *shortestPath(map *mp, int a, int b, int cost);

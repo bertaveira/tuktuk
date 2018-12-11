@@ -24,6 +24,10 @@ struct _node {
   short int x;
 };
 
+struct _path {
+  int **mtx;
+  int *cst;
+};
 //#define DEBUG 0
 
 
@@ -155,7 +159,6 @@ void modeB(map *mp, char *outname){
 }
 
 
-
 /**
 *  - modeC - Run variable C of the program
 *
@@ -164,69 +167,40 @@ void modeB(map *mp, char *outname){
 *
 **/
 void modeC(map *mp, char *outname){
-  list ***adj = (list ***)malloc(sizeof(list **)*mp->nPoints); // matrix of paths between two points
-  list *lt[mp->nPoints-1];
-  int i, j, cost = 0, count = 0;
+  path *pt[mp->nPoints];
+  int i, cost = 0, count = 0;
   int best[mp->nPoints], vect[mp->nPoints]; // best path and path being examined
   FILE *fpw = NULL;
   bool error = false;
 
   // each list stores the best path between two points (adj[a][b] - path a->b)
-  for(i=0; i<mp->nPoints; i++) adj[i] = (list **)malloc(sizeof(list *)*mp->nPoints);
-  for( i = 0; i<mp->nPoints; i++) {
-    adj[i][i] = NULL;
-    for (j = i+1; j<mp->nPoints; j++) {
-      adj[i][j] = shortestPath(mp, i, j, 0); // get best path between points i and j (from mp->points[][x])
-      clearList(adj[i][j]); // remove from list the points no in best path
-      // backwords path set to NULL (later if needed we can reverse the list)
-      adj[j][i] = NULL;
-    }
-  }
-  // check if at least every point has a path to any other
-  for( i = 0; i<mp->nPoints; i++) {
-    error = true;
-    for (j = 0; j<mp->nPoints; j++) {
-      if (adj[i][j] != NULL || adj[j][i] != NULL) {
-        error = false;
-      }
-    }
-    if (error) break;
+  for(i=0; i<mp->nPoints; i++) {
+    if (!(error))pt[i] = shortestPathC(mp, i);
+    else pt[i] = NULL;
+    if (pt[i] == NULL) error = true;
   }
 
   //start point is 0
   vect[0] = 0; // each number "x" coresponds to the point (mp->points[1][x], mp->points[0][x])
   // call recursive function to find best hamilton path between the points of interest
-  if (!(error)) hamAndCheese(1, mp, adj, vect, best, 0, &cost);
+  if (!(error)) hamPath(1, mp, pt, vect, best, 0, &cost);
 
   fpw = fopen(outname, "a");
   // no possible path
   if( cost == 0 || error) {
     printerror(mp, fpw);
-    freeAdj(adj, mp->nPoints);
+    for(i=0; i<mp->nPoints; i++) freePath(pt[i], mp);
     fclose(fpw);
     return;
   }
 
-  // merge all the lists of paths between points to form the best overall path
-  for (i = 0; i<mp->nPoints-1; i++) {
-    // list backwords... need to reverse it
-    if (adj[best[i]][best[i+1]] == NULL) {
-      lt[i] = reverseList(adj[best[i+1]][best[i]], mp, best[i+1]);
-      adj[best[i+1]][best[i]] = NULL;
-    }else{
-      lt[i] = adj[best[i]][best[i+1]];
-      adj[best[i]][best[i+1]] = NULL;
-    }
-  }
-
   // Print output file
   fprintf(fpw, "%hd %hd %c %hd %d ", mp->y, mp->x, mp->mode, mp->nPoints, cost);
-  printPoints(lt, lt[mp->nPoints-2], fpw, &count, mp, mp->nPoints-2);
+  printPointsC(pt, best, mp->points[0][best[mp->nPoints-1]], mp->points[1][best[mp->nPoints-1]], fpw, &count, mp, mp->nPoints-2);
   fprintf(fpw, "\n");
   // free all
   fclose(fpw);
-  for(i = 0; i<mp->nPoints-1; i++) freeList(lt[i]);
-  freeAdj(adj, mp->nPoints);
+  for(i=0; i<mp->nPoints; i++) freePath(pt[i], mp);
 }
 
 
@@ -243,7 +217,7 @@ void modeC(map *mp, char *outname){
 * @param int bCost - stores the cost of the best path sored in best[]
 *
 **/
-void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cost, int *bCost) {
+void hamPath(int pos, map *mp, path *pt[], int vect[], int best[], int cost, int *bCost) {
   int i, nextCost= 0;
 
   // found a possible path
@@ -273,13 +247,11 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
   for (i = 1; i< mp->nPoints; i++) {
     if(cost>=*bCost && *bCost != 0) return;
     // is it already in vect[]? and is it a possible path?
-    if ( newAdj(vect, pos, i) && (adj[vect[pos-1]][i] != NULL || adj[i][vect[pos-1]] != NULL)) {
+    if ( i != pos-1 && newAdj(vect, pos, i)) {
       vect[pos] = i;
-      if (adj[vect[pos-1]][i] == NULL) { // path needs to be reversed
-        nextCost = cost + ((node *)(adj[i][vect[pos-1]]->item))->cost - mp->map[mp->points[0][vect[pos-1]]][mp->points[1][vect[pos-1]]] + mp->map[mp->points[0][i]][mp->points[1][i]];
-      } else nextCost = cost + ((node *)(adj[vect[pos-1]][i]->item))->cost;
+      nextCost = cost + pt[vect[pos-1]]->cst[i];
       // call itself to finde next step (vect[pos+1])
-      hamAndCheese(pos+1, mp, adj, vect, best, nextCost, bCost);
+      hamPath(pos+1, mp, pt, vect, best, nextCost, bCost);
 #ifdef DEBUG
         printf("Regrediu\n");
         printf("Vetor -");
@@ -293,6 +265,112 @@ void hamAndCheese(int pos, map *mp, list ***adj, int vect[], int best[], int cos
   }
   return;
 }
+
+
+
+path *shortestPathC(map *mp, int a) {
+  int i, j;
+  path *pt = (path *)malloc(sizeof(path));
+  node *st = (node *)malloc(sizeof(node));
+
+  st->cost = 0;
+  st->org[0] = -1;
+  st->org[1] = -1;
+  st->y = mp->points[0][a];
+  st->x = mp->points[1][a];
+
+  pt->mtx = (int **)malloc(sizeof(int *)*mp->y);
+  for(i = 0; i< mp->y; i++) {
+    pt->mtx[i] = (int *)malloc(sizeof(int)*mp->x);
+    for(j = 0; j<mp->x; j++) {
+      pt->mtx[i][j] = -1;
+    }
+  }
+  pt->cst = (int *)malloc((mp->nPoints)*sizeof(int));
+  for (i = 0; i<mp->nPoints; i++) pt->cst[i] = 0;
+  pt->mtx[st->y][st->x] = -2;
+
+  heapInit((mp->x*mp->y)/2);
+  // start searching for the best path
+  while (st != NULL && !(foundAllPoints(mp, a, pt))) {
+    addNodesC(mp, st, pt, a);
+    free(st);
+    st = heapGetMax(compNodes);
+  }
+  freeHeap();
+  //free list of path not found
+  if (st == NULL) {
+    freePath(pt, mp);
+    pt = NULL;
+  } else free(st);
+  return pt;
+}
+
+
+void addNodesC(map *mp, node *org, path *pt, int a) {
+  int i, j, x, y;
+  node *new;
+
+  for(i = 0; i<8; i++) {
+    x= org->x +PF[1][i];
+    y= org->y +PF[0][i];
+    if( inMapCheck(mp, x, y) ) {
+      if(pt->mtx[y][x] == -1) {
+        new = (node *)malloc(sizeof(node));
+        new->y = y;
+        new->x = x;
+        new->org[0] = org->y;
+        new->org[1] = org->x;
+        new->cost = org->cost + mp->map[y][x];
+        pt->mtx[y][x] = i;
+        heapInsert(new, compNodes);
+        for(j=0; j<mp->nPoints; j++ )
+          if (j != a && y == mp->points[0][j] && x == mp->points[1][j]) pt->cst[j] = new->cost;
+      }
+    }
+  }
+}
+
+
+void printPointsC(path *pt[], int vect[], int y, int x, FILE *fpw, int *count, map *mp, int pos) {
+  int cost, o;
+
+  if (pt == NULL) return;
+  if (pt[vect[pos]]->mtx[y][x] != -2) {
+    *count = *count +1;
+    o = pt[vect[pos]]->mtx[y][x];
+    printPointsC(pt, vect, y -PF[0][o], x -PF[1][o], fpw, count, mp, pos); // recursive call
+  } else if(pos > 0){
+    printPointsC(pt, vect, mp->points[0][vect[pos]], mp->points[1][vect[pos]], fpw, count, mp, pos-1); // recursive call
+  } else {
+    if (pt[pos]->mtx[y][x] == -2 && *count == 0) {
+      fprintf(fpw, "0\n"); // print number zero if it is a simple path (same start and end point)
+      return;
+    } else {
+      fprintf(fpw, "%d\n", *count); // print number of points ate the end of the recurssion
+    }
+  }
+  cost = mp->map[y][x];
+  if (pt[pos]->mtx[y][x] != -2) fprintf(fpw, "%hd %hd %hd\n", y, x, cost); //print points
+}
+
+
+bool foundAllPoints(map *mp, int a, path *pt) {
+  int i;
+  for(i=0; i<mp->nPoints; i++ ) {
+    if ( i != a && pt->mtx[mp->points[0][i]][mp->points[1][i]] == -1) return false;
+  }
+  return true;
+}
+
+void freePath(path *pt, map *mp) {
+  int i;
+  for( i=0; i<mp->y; i++) free(pt->mtx[i]);
+  free(pt->mtx);
+  free(pt->cst);
+  free(pt);
+}
+
 
 /**
 *  - newAdj - verify if vertice "i" is already in vect[]
